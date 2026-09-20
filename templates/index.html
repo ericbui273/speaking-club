@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Speaking club</title>
+</head>
+
+<body>
+  <h1>Welcome to speaking club!</h1>
+  
+  <p>
+    {% if session.user_id %}
+    <a href="/logout">Log out</a> | 
+    <a href="/new_post">Create new post</a>
+    {% else %}
+    <a href="/register">Create an account</a> | 
+    <a href="/login">Log in</a>
+    {% endif %}
+  </p>
+
+  <hr />
+  {% for session in sessions %}
+  <p>
+    <a href="/session/{{ session.id }}">{{ session.title }}</a>
+    <br />
+    Language: {{ session.languages }} , {{ session.avail_slot }} places available
+    <br />
+    {{ session.date_time }}, venue: {{ session.venue }}
+  </p>
+  <hr />
+  {% endfor %}
+
+</body>
+
+</html>

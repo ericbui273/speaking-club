@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Create new post</title>
+</head>
+
+<body>
+    <h1>Create new post</h1>
+
+    <form action="/new_post" method="POST">
+    <p>
+        Title: <br />
+        <input type="text" name="title" />
+    </p>
+    <p>
+        Language: <br />
+        <input type="text" name="languages" />
+    </p>
+    <p>
+        Date and time: <br />
+        <input type="datetime-local" name="date_time" /> 
+    </p>
+    <p>
+        Location: <br />
+        <input type="text" name="venue" />
+    </p>
+    <p>
+        Target participant amount: <br />
+        <input type="number" name="avail_slot" min="5" />
+    </p>
+    <p>
+        Post content: <br />
+        <textarea name="content" rows="5" cols="40"></textarea>
+    </p>
+    <input type="submit" value="Create post" />
+    </form>
+
+</body>
+
+</html>
