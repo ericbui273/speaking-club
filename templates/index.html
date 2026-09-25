@@ -16,16 +16,17 @@
     <a href="/register">Create an account</a> | 
     <a href="/login">Log in</a>
     {% endif %}
+    | <a href="/search">Search by keyword</a>
   </p>
 
   <hr />
-  {% for session in sessions %}
+  {% for meetup in meetups %}
   <p>
-    <a href="/session/{{ session.id }}">{{ session.title }}</a>
+    <a href="/meetup/{{ meetup.id }}">{{ meetup.title }}</a>
     <br />
-    Language: {{ session.languages }} , {{ session.avail_slot }} places available
+    Language: {{ meetup.languages }} , {{ meetup.avail_slot }} places available
     <br />
-    {{ session.date_time }}, venue: {{ session.venue }}
+    {{ meetup.date_time }}, venue: {{ meetup.venue }}
   </p>
   <hr />
   {% endfor %}
