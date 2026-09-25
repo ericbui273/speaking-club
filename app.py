@@ -6,6 +6,11 @@ import config, users, forum
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+@app.route("/")
+def index():
+    meetups = forum.get_meetups()
+    return render_template("index.html", meetups = meetups) 
+
 @app.route("/register", methods = ["GET", "POST"])
 def register():
     if request.method == "GET":
@@ -22,60 +27,6 @@ def register():
         return '<p>Account has been created.</p><p><a href="/login">To the login page</a> <a href="/">To the front page</a></p>'
     except sqlite3.IntegrityError:
         return '<p>ERROR: username is not available!</p><p><a href="/register">Try again</a></p>'
-
-@app.route("/")
-def index():
-    sessions = forum.get_sessions()
-    return render_template("index.html", sessions = sessions) 
-
-@app.route("/session/<int:session_id>")
-def show_post(session_id):
-    post = forum.get_session(session_id)
-    return render_template("session.html", post = post)
-
-@app.route("/new_post", methods=["POST", "GET"])
-def new_post():
-    if request.method == "GET":
-        return render_template("new_post.html")
-
-    title = request.form["title"]
-    languages = request.form["languages"]
-    date_time = request.form["date_time"]
-    venue = request.form["venue"]
-    avail_slot = request.form["avail_slot"]
-    content = request.form["content"]
-    host_id = session["user_id"]
-    session_id = forum.add_session(title, languages, date_time, venue, avail_slot, content, host_id)
-    return redirect("/session/" + str(session_id))
-
-@app.route("/edit/<int:post_id>", methods=["GET","POST"])
-def edit(post_id):
-    session = forum.get_session(post_id)
-    if request.method == "GET":
-        return render_template("edit.html", post = session)
-
-    title = request.form["title"] 
-    languages = request.form["languages"] 
-    date_time = request.form["date_time"] 
-    venue = request.form["venue"] 
-    avail_slot = request.form["avail_slot"] 
-    content = request.form["content"]
-    forum.edit_session(title, languages, date_time, venue, avail_slot, content, post_id)
-    return redirect("/session/" + str(post_id))
-
-@app.route("/remove/<int:post_id>", methods = ["GET","POST"])
-def remove(post_id):
-    session = forum.get_session(post_id)
-
-    if request.method == "GET":
-        return render_template("remove.html", post = session)
-
-    if request.method == "POST":
-        if "continue" in request.form:
-            forum.remove_session(post_id)
-            return redirect("/")
-        return redirect("/session/" + str(post_id))
-
 
 @app.route("/login", methods=["POST","GET"])
 def login():
@@ -97,3 +48,58 @@ def login():
 def logout():
     del session["user_id"]
     return redirect("/")
+
+@app.route("/meetup/<int:meetup_id>")
+def show_post(meetup_id):
+    meetup = forum.get_meetup(meetup_id)
+    return render_template("meetup.html", meetup = meetup)
+
+@app.route("/new_post", methods=["POST", "GET"])
+def new_post():
+    if request.method == "GET":
+        return render_template("new_post.html")
+
+    title = request.form["title"]
+    languages = request.form["languages"]
+    date_time = request.form["date_time"]
+    venue = request.form["venue"]
+    avail_slot = request.form["avail_slot"]
+    content = request.form["content"]
+    host_id = session["user_id"]
+    meetup_id = forum.add_meetup(title, languages, date_time, venue, avail_slot, content, host_id)
+    return redirect("/meetup/" + str(meetup_id))
+
+@app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
+def edit(meetup_id):
+    meetup = forum.get_meetup(meetup_id)
+
+    if request.method == "GET":
+        return render_template("edit.html", meetup = meetup)
+
+    title = request.form["title"] 
+    languages = request.form["languages"] 
+    date_time = request.form["date_time"] 
+    venue = request.form["venue"] 
+    avail_slot = request.form["avail_slot"] 
+    content = request.form["content"]
+    forum.edit_meetup(title, languages, date_time, venue, avail_slot, content, meetup_id)
+    return redirect("/meetup/" + str(meetup_id))
+
+@app.route("/remove/<int:meetup_id>", methods = ["GET","POST"])
+def remove(meetup_id):
+    meetup = forum.get_meetup(meetup_id)
+
+    if request.method == "GET":
+        return render_template("remove.html", meetup = meetup)
+
+    if request.method == "POST":
+        if "continue" in request.form:
+            forum.remove_meetup(meetup_id)
+            return redirect("/")
+        return redirect("/meetup/" + str(meetup_id))
+
+@app.route("/search")
+def search():
+    query = request.args.get("query")
+    results = forum.search(query) if query else []
+    return render_template("search.html", query=query, results=results)
