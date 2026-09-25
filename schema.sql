@@ -4,7 +4,7 @@ CREATE TABLE users (
     password_hash TEXT
 );
 
-CREATE TABLE speaking_session (
+CREATE TABLE meetup (
     id INTEGER PRIMARY KEY,
     title TEXT,
     languages TEXT,
@@ -18,5 +18,5 @@ CREATE TABLE speaking_session (
 CREATE TABLE participants (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users,
-    event_id INTEGER REFERENCES speaking_session
+    event_id INTEGER REFERENCES meetup
 );
