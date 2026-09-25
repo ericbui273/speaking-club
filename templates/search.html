@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Search</title>
+</head>
+
+<body>
+  <h1>Search</h1>
+
+  <form action="/search" method="get">
+    <p>
+      Search keyword:
+      {% if query %}
+      <input type="text" name="query" value="{{ query }}" />
+      {% else %}
+      <input type="text" name="query" />
+      {% endif %}
+    </p>
+    <input type="submit" value="Search" /> | <a href="/">Frontpage</a>
+  </form>
+
+  {% if query %}
+  <hr />
+  <h2>Results</h2>
+  
+  <ul>
+  {% for session in results %}
+  <p>
+    <a href="/session/{{ session.id }}">{{ session.title }}</a>
+    <br />
+    Language: {{ session.languages }} , {{ session.avail_slot }} places available
+    <br />
+    {{ session.date_time }}, venue: {{ session.venue }}
+  </p>
+  <hr />
+  {% endfor %}
+  </ul>
+  {% endif %}
+</body>
+
+</html>
