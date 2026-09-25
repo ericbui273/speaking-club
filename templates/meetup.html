@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{ meetup.title }}</title>
+</head>
+
+<body>
+  <h1>{{ meetup.title }}</h1>
+
+  <hr />
+  <p>
+    Host: {{ meetup.username }}
+  </p>
+  <p>
+    {{ meetup.content }}
+  </p>
+  <p>
+    Time: {{ meetup.date_time }}
+    <br />
+    Location: {{ meetup.venue }}
+    <br />
+    Language: {{ meetup.languages }}
+  </p>
+
+  <p>
+    <a href="/">To the front page</a>
+  </p>
+  <p>
+    {% if session.user_id and session.user_id == meetup.host_id %}
+    <a href="/edit/{{ meetup.id }}">Edit post</a> | 
+    <a href="/remove/{{ meetup.id }}">Remove post</a>
+    {% endif %}
+  </p>
+</body>
+
+</html>
