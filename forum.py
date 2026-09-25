@@ -5,7 +5,7 @@ def get_meetups():
     return db.query(sql)
 
 def get_meetup(meetup_id):
-    sql = """SELECT s.*, u.username
+    sql = """SELECT m.*, u.username
             FROM meetup AS m, users AS u
             WHERE m.host_id = u.id AND m.id = ?"""
     return db.query(sql,[meetup_id])[0]
@@ -28,7 +28,7 @@ def remove_meetup(meetup_id):
     db.execute(sql, [meetup_id])
 
 def search(query):
-    sql = """SELECT s.*, u.username
+    sql = """SELECT m.*, u.username
             FROM meetup AS m, users AS u
             WHERE m.host_id = u.id AND (m.title LIKE ? OR m.languages LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
             ORDER BY m.date_time"""
