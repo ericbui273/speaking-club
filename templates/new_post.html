@@ -11,11 +11,11 @@
     <form action="/new_post" method="POST">
     <p>
         Title: <br />
-        <input type="text" name="title" />
+        <input type="text" name="title" maxlength="100" />
     </p>
     <p>
         Language: <br />
-        <input type="text" name="languages" />
+        <input type="text" name="languages" maxlength="50" />
     </p>
     <p>
         Date and time: <br />
@@ -23,15 +23,15 @@
     </p>
     <p>
         Location: <br />
-        <input type="text" name="venue" />
+        <input type="text" name="venue" maxlength="100" />
     </p>
     <p>
         Target participant amount: <br />
-        <input type="number" name="avail_slot" min="5" />
+        <input type="number" name="avail_slot" min="5" max="50" />
     </p>
     <p>
         Post content: <br />
-        <textarea name="content" rows="5" cols="40"></textarea>
+        <textarea name="content" rows="5" cols="40" maxlength="5000"></textarea>
     </p>
     <input type="submit" value="Create post" />
     </form>
