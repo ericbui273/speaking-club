@@ -34,3 +34,10 @@ def search(query):
             WHERE m.host_id = u.id AND (m.title LIKE ? OR m.languages LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
             ORDER BY m.date_time"""
     return db.query(sql,["%" + query + "%"]*5)
+
+def add_participant(user_id, event_id, name, level, comment):
+    sql = """INSERT INTO participants (user_id, event_id, participant_name, language_level, comment)
+                VALUES (?,?,?,?,?)"""
+    db.execute(sql,[user_id,event_id,name,level,comment])
+    participant_id = db.last_insert_id()
+    return participant_id
