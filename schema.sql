@@ -18,5 +18,7 @@ CREATE TABLE meetup (
 CREATE TABLE participants (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users,
-    event_id INTEGER REFERENCES meetup
-);
+    event_id INTEGER REFERENCES meetup,
+    participant_name TEXT, 
+    language_level TEXT, 
+    comment TEXT);
