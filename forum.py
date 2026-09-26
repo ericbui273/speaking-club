@@ -8,7 +8,8 @@ def get_meetup(meetup_id):
     sql = """SELECT m.*, u.username
             FROM meetup AS m, users AS u
             WHERE m.host_id = u.id AND m.id = ?"""
-    return db.query(sql,[meetup_id])[0]
+    result = db.query(sql,[meetup_id])
+    return result[0] if result else None
 
 def add_meetup(title, languages, date_time, venue, avail_slot, content, host_id):
     sql = """INSERT INTO meetup (title, languages, date_time, venue, avail_slot, content, host_id) 
