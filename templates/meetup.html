@@ -35,7 +35,11 @@
   <p>
     {% if session.user_id and session.user_id == meetup.host_id %}
     <a href="/edit/{{ meetup.id }}">Edit post</a> | 
-    <a href="/remove/{{ meetup.id }}">Remove post</a>
+    <a href="/remove/{{ meetup.id }}">Remove post</a> <br />
+  </p>
+
+  <p>
+    <a href="/participants/meetup/{{ meetup.id }}">List of participants</a>
     {% endif %}
   </p>
 
