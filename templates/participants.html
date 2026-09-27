@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meetup participants</title>
+</head>
+
+<body>
+    <h1>Meetup participants</h1>
+    {% if meetup.host_id == session.user_id %}
+    {% for person in participants %}
+    <p>
+        Username: {{ person.username }} <br />
+        Name: {{ person.participant_name}} <br />
+        Language level: {{ person.language_level }} <br />
+        Comment for host: {{ person.comment }} <br />
+    </p>
+    <hr />
+    {% endfor %}
+    {% endif %}
+    <p>
+        <a href="/meetup/{{ meetup.id }}">Back to event page</a>
+        <a href="/">To the front page</a>
+    </p>
+    
+</body>
+</html>

@@ -2,7 +2,6 @@ import sqlite3
 from flask import Flask
 from flask import abort, redirect, render_template, request, session
 import config, users, forum
-from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -141,6 +140,16 @@ def search():
     query = request.args.get("query")
     results = forum.search(query) if query else []
     return render_template("search.html", query=query, results=results)
+
+@app.route("/participants/meetup/<int:meetup_id>")
+def show_participants(meetup_id):
+    participants = forum.get_participants(meetup_id)
+    meetup = forum.get_meetup(meetup_id)
+    if not meetup:
+        abort(404)
+    if "user_id" not in session or session["user_id"] != meetup["host_id"]:
+        abort(403)
+    return render_template("participants.html", meetup=meetup, participants=participants)
 
 
 

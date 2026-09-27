@@ -47,3 +47,10 @@ def get_attending_meetups(user_id):
             WHERE user_id = ?"""
     result = db.query(sql,[user_id])
     return [res[0] for res in result] if result else []
+
+def get_participants(meetup_id):
+    sql = """SELECT u.username, p.participant_name, p.language_level, p.comment
+            FROM participants AS p, users AS u
+            WHERE p.user_id = u.id
+            AND p.event_id = ?"""
+    return db.query(sql,[meetup_id])
