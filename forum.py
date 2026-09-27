@@ -41,3 +41,9 @@ def add_participant(user_id, event_id, name, level, comment):
     db.execute(sql,[user_id,event_id,name,level,comment])
     participant_id = db.last_insert_id()
     return participant_id
+
+def get_attending_meetups(user_id):
+    sql = """SELECT event_id FROM participants
+            WHERE user_id = ?"""
+    result = db.query(sql,[user_id])
+    return [res[0] for res in result] if result else []

@@ -24,13 +24,23 @@
   </p>
 
   <p>
-    <a href="/">To the front page</a>
+    {% if session.user_id and session.user_id != meetup.host_id and meetup.id not in attending_meetups %}
+    <a href="/attending/{{ meetup.id }}">Attending meetup</a>
+    {% elif not session.user_id %}
+    <a href="/login">Log in to attend meetup</a> <br />
+    Does not have an account? <a href="/register">Create an account</a>
+    {% endif %}
   </p>
+
   <p>
     {% if session.user_id and session.user_id == meetup.host_id %}
     <a href="/edit/{{ meetup.id }}">Edit post</a> | 
     <a href="/remove/{{ meetup.id }}">Remove post</a>
     {% endif %}
+  </p>
+
+  <p>
+    <a href="/">To the front page</a>
   </p>
 </body>
 
