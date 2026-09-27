@@ -11,3 +11,24 @@
 * The user can classify their sessions by languages, locations, and levels (beginner/intermediate/advanced).
 * The users can register for a sessions, and the announcement can update the numbers of slots left after each user registration.
 * The user can send message to the session hosts (I am not sure if this is doable though).
+
+## User guidance
+After cloning the project from Github, follow the commands below to get the application started.
+
+Install the `flask` library:
+```
+$ pip install flask
+```
+Create a new database (on Linux):
+```
+$ sqlite3 database.db < schema.sql
+```
+Create a new database on Windows Powershell:
+```
+sqlite3 database.db
+sqlite> .read schema.sql
+```
+Launch the application:
+```
+flask run
+```
