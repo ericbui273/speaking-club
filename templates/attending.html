@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attending speaking meetup</title>
+</head>
+<body>
+    <h1>Attending {{ meetup.title }}</h1>
+    
+    <form action="/attending/{{ meetup.id }}" method="POST">
+    <p>
+        Your name: <br />
+        <input type = "text" name="name" maxlength="100" />
+    </p>
+    <p>
+        How do you define you {{ meetup.language }} level? <br />
+        <input type="radio" id="begin" name="level" value="Beginner">
+        <label for="begin">Beginner</label><br />
+        <input type="radio" id="inter" name="level" value="Intermediate">
+        <label for="inter">Intermediate</label><br />
+        <input type="radio" id="advanced" name="level" value="Advanced">
+        <label for="advanced">Advacned</label><br />
+        <input type="radio" id="native" name="level" value="Native">
+        <label for="native">Native</label><br />
+    </p>
+    <p>
+        Write here any comment/question/need for special accommodation <br />
+        <textarea name="comment" rows="5" cols="40" maxlength="5000"></textarea>
+    </p>
+    <input type="submit" value="Submit" />
+    </form>
+
+</body>
+</html>
