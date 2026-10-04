@@ -184,4 +184,12 @@ def show_participants(meetup_id):
     return render_template("participants.html", meetup=meetup, participants=participants)
 
 
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    host_events = users.get_host_events(user_id)
+    attending_events = users.get_attending_events(user_id)
+    return render_template("user.html", user = user, host_events = host_events, attending_events=attending_events)
 

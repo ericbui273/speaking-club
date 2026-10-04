@@ -16,3 +16,20 @@ def check_login(username, password):
             return user_id
 
     return None
+
+def get_user(user_id):
+    sql = "SELECT username FROM users WHERE id = ?"
+    result = db.query(sql, [user_id])
+    return result[0] if result else None
+
+def get_host_events(user_id):
+    sql = """SELECT id, title, languages, date_time
+            FROM meetup WHERE host_id = ?"""
+    return db.query(sql, [user_id])
+
+def get_attending_events(user_id):
+    sql = """SELECT m.id, m.title, m.languages, m.date_time, u.username, m.host_id
+            FROM meetup AS m, participants AS p, users AS u
+            WHERE m.id = p.event_id AND m.host_id = u.id
+            AND p.user_id = ?"""
+    return db.query(sql,[user_id])
