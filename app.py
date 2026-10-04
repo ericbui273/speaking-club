@@ -18,6 +18,9 @@ def register():
 
     username = request.form["username"]
     password1 = request.form["password1"]
+
+    if not username or not password1 or len(username) not in range(5,51) or len(password1) < 8:
+        abort(403)
     password2 = request.form["password2"]
     if password1 != password2:
         return "ERROR: Passwords don't march!"
@@ -70,11 +73,19 @@ def attending(meetup_id):
 
     if request.method == "GET":
         return render_template("attending.html", meetup = meetup)
-
+    print(request.form)
     user_id = session["user_id"]
     name = request.form["name"]
-    level = request.form["level"]
+    if not name or len(name) > 50:
+        abort(403)
+    level = request.form["level"] if "level" in request.form else "Unknown"
+    if level not in ["Unknown","Beginner", "Intermediate", "Advanced", "Native"]:
+        abort(403)
+
     comment = request.form["comment"] if request.form["comment"] else "No comment"
+    if len(comment) > 5000:
+        abort(403)
+
     forum.add_participant(user_id,meetup_id, name, level, comment)
     return redirect("/meetup/" + str(meetup_id))
 
@@ -87,9 +98,10 @@ def new_post():
 
     title = request.form["title"]
     content = request.form["content"]
-    if not title or len(title) > 100 or len(content) > 5000:
-        abort(403)
     languages = request.form["languages"]
+    if not title or not languages or len(languages) > 50 or len(title) > 100 or len(content) > 5000:
+        abort(403)
+    
     date_time = request.form["date_time"]
     venue = request.form["venue"]
     avail_slot = request.form["avail_slot"]
@@ -103,6 +115,8 @@ def edit(meetup_id):
     if "user_id" not in session:
         abort(403)
     meetup = forum.get_meetup(meetup_id)
+    if not meetup:
+        abort(404)
     if meetup["host_id"] != session["user_id"]:
         abort(403)
 
@@ -110,11 +124,20 @@ def edit(meetup_id):
         return render_template("edit.html", meetup = meetup)
 
     title = request.form["title"] 
-    languages = request.form["languages"] 
+    if not title or len(title) > 100:
+        abort(403)
+
+    languages = request.form["languages"]
+    if not languages or len(languages) > 100:
+        abort(403)
+
     date_time = request.form["date_time"] 
     venue = request.form["venue"] 
     avail_slot = request.form["avail_slot"] 
     content = request.form["content"]
+    if len(content) > 5000:
+        abort(403)
+
     forum.edit_meetup(title, languages, date_time, venue, avail_slot, content, meetup_id)
     return redirect("/meetup/" + str(meetup_id))
 
@@ -122,7 +145,11 @@ def edit(meetup_id):
 def remove(meetup_id):
     if "user_id" not in session:
         abort(403)
+
     meetup = forum.get_meetup(meetup_id)
+    if not meetup:
+        abort(404)
+
     if meetup["host_id"] != session["user_id"]:
         abort(403)
 
@@ -130,6 +157,8 @@ def remove(meetup_id):
         return render_template("remove.html", meetup = meetup)
 
     if request.method == "POST":
+        print(request.method)
+        print(request.form)
         if "continue" in request.form:
             forum.remove_meetup(meetup_id)
             return redirect("/")
@@ -143,12 +172,15 @@ def search():
 
 @app.route("/participants/meetup/<int:meetup_id>")
 def show_participants(meetup_id):
-    participants = forum.get_participants(meetup_id)
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
         abort(404)
+
+    participants = forum.get_participants(meetup_id)
+    
     if "user_id" not in session or session["user_id"] != meetup["host_id"]:
         abort(403)
+
     return render_template("participants.html", meetup=meetup, participants=participants)
 
 

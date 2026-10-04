@@ -25,6 +25,8 @@ def edit_meetup(title, languages, date_time, venue, avail_slot, content, id):
     db.execute(sql,[title, languages, date_time, venue, avail_slot, content, id])
 
 def remove_meetup(meetup_id):
+    sql = "DELETE FROM participants WHERE event_id = ?"
+    db.execute(sql, [meetup_id])
     sql = "DELETE FROM meetup WHERE id = ?"
     db.execute(sql, [meetup_id])
 

@@ -11,19 +11,19 @@
     <form action="/new_post" method="POST">
     <p>
         Title: <br />
-        <input type="text" name="title" maxlength="100" />
+        <input type="text" name="title" maxlength="100" required />
     </p>
     <p>
         Language: <br />
-        <input type="text" name="languages" maxlength="50" />
+        <input type="text" name="languages" maxlength="50" required />
     </p>
     <p>
         Date and time: <br />
-        <input type="datetime-local" name="date_time" /> 
+        <input type="datetime-local" name="date_time" required /> 
     </p>
     <p>
         Location: <br />
-        <input type="text" name="venue" maxlength="100" />
+        <input type="text" name="venue" maxlength="100" required />
     </p>
     <p>
         Target participant amount: <br />
