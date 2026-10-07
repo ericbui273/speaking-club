@@ -6,6 +6,10 @@ import config, users, forum
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def require_login():
+    if "user_id" not in session:
+        abort(403)
+
 @app.route("/")
 def index():
     meetups = forum.get_meetups()
@@ -49,6 +53,7 @@ def login():
 
 @app.route("/logout")
 def logout():
+    require_login()
     del session["user_id"]
     return redirect("/")
 
@@ -65,8 +70,7 @@ def show_meetup(meetup_id):
 
 @app.route("/attending/<int:meetup_id>", methods = ["GET","POST"])
 def attending(meetup_id):
-    if "user_id" not in session:
-        abort(403)
+    require_login()
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
         abort(404)
@@ -91,10 +95,11 @@ def attending(meetup_id):
 
 @app.route("/new_post", methods=["POST", "GET"])
 def new_post():
-    if "user_id" not in session:
-        abort(403)
+    require_login()
+
     if request.method == "GET":
-        return render_template("new_post.html")
+        classes = forum.get_all_classes()
+        return render_template("new_post.html", classes=classes)
 
     title = request.form["title"]
     content = request.form["content"]
@@ -105,15 +110,27 @@ def new_post():
     date_time = request.form["date_time"]
     venue = request.form["venue"]
     avail_slot = request.form["avail_slot"]
-    
     host_id = session["user_id"]
-    meetup_id = forum.add_meetup(title, languages, date_time, venue, avail_slot, content, host_id)
+
+    all_classes = forum.get_all_classes()
+
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                abort(403)
+            if class_value not in all_classes[class_title]:
+                abort(403)
+            classes.append((class_title, class_value))
+
+    meetup_id = forum.add_meetup(title, languages, date_time, venue, avail_slot, content, host_id, classes)
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
 def edit(meetup_id):
-    if "user_id" not in session:
-        abort(403)
+    require_login()
+
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
         abort(404)
@@ -143,8 +160,7 @@ def edit(meetup_id):
 
 @app.route("/remove/<int:meetup_id>", methods = ["GET","POST"])
 def remove(meetup_id):
-    if "user_id" not in session:
-        abort(403)
+    require_login()
 
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
@@ -172,13 +188,15 @@ def search():
 
 @app.route("/participants/meetup/<int:meetup_id>")
 def show_participants(meetup_id):
+    require_login()
+
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
         abort(404)
 
     participants = forum.get_participants(meetup_id)
     
-    if "user_id" not in session or session["user_id"] != meetup["host_id"]:
+    if session["user_id"] != meetup["host_id"]:
         abort(403)
 
     return render_template("participants.html", meetup=meetup, participants=participants)

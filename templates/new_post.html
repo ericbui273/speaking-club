@@ -14,16 +14,30 @@
         <input type="text" name="title" maxlength="100" required />
     </p>
     <p>
-        Language: <br />
-        <input type="text" name="languages" maxlength="50" required />
+        <label for="classlang">Language</label>: <br />
+        <select name="clases" id="classlang">
+            <option value="">(choose)</option>
+        {% for option in classes['language'] %}
+            <option value="language:{{ option }}">{{ option }}</option>
+        {% endfor %}
+        </select>
     </p>
     <p>
         Date and time: <br />
         <input type="datetime-local" name="date_time" required /> 
     </p>
     <p>
-        Location: <br />
+        Venue: <br />
         <input type="text" name="venue" maxlength="100" required />
+    </p>
+    <p>
+        <label for="classcity">City</label>: <br />
+        <select name="clases" id="classcity" required>
+            <option value="">(choose)</option>
+        {% for option in classes['city'] %}
+            <option value="city:{{ option }}">{{ option }}</option>
+        {% endfor %}
+        </select>
     </p>
     <p>
         Target participant amount: <br />

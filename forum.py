@@ -11,23 +11,56 @@ def get_meetup(meetup_id):
     result = db.query(sql,[meetup_id])
     return result[0] if result else None
 
-def add_meetup(title, languages, date_time, venue, avail_slot, content, host_id):
+def get_all_classes():
+    sql = "SELECT title, value FROM classes ORDER BY id"
+    result = db.query(sql)
+
+    classes = {}
+
+    for title, value in result:
+        if title not in classes.keys():
+            classes[title] = []
+        classes[title].append(value)
+
+    return classes
+
+def get_classes(meetup_id):
+    sql = "SELECT title, value FROM meetup_classes WHERE id = ?"
+    return db.query(sql, [meetup_id])
+
+def add_meetup(title, languages, date_time, venue, avail_slot, content, host_id, classes):
     sql = """INSERT INTO meetup (title, languages, date_time, venue, avail_slot, content, host_id) 
             VALUES(?,?,?,?,?,?,?)"""
     db.execute(sql,[title, languages, date_time, venue, avail_slot, content, host_id])
     meetup_id = db.last_insert_id()
+
+    sql = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
+    for class_title, class_value in classes:
+        db.execute(sql, [meetup_id, class_title, class_value])
+
     return meetup_id
 
-def edit_meetup(title, languages, date_time, venue, avail_slot, content, id):
+def edit_meetup(title, languages, date_time, venue, avail_slot, content, id, classes):
     sql = """UPDATE meetup
             SET title = ?, languages = ?, date_time = ?, venue = ?, avail_slot = ?, content = ?
             WHERE id = ?"""
     db.execute(sql,[title, languages, date_time, venue, avail_slot, content, id])
 
+    sql = "DELETE FROM meetup_classes WHERE meetup_id = ?"
+    db.execute(sql, [id])
+
+    sql = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
+    for class_title, class_value in classes:
+        db.execute(sql, [id, class_title, class_value])
+
 def remove_meetup(meetup_id):
     sql = "DELETE FROM participants WHERE event_id = ?"
     db.execute(sql, [meetup_id])
+
     sql = "DELETE FROM meetup WHERE id = ?"
+    db.execute(sql, [meetup_id])
+
+    sql = "DELETE FROM meetup_classes WHERE meetup_id = ?"
     db.execute(sql, [meetup_id])
 
 def search(query):
