@@ -15,7 +15,7 @@
     </p>
     <p>
         <label for="classlang">Language</label>: <br />
-        <select name="clases" id="classlang">
+        <select name="classes" id="classlang">
             <option value="">(choose)</option>
         {% for option in classes['language'] %}
             <option value="language:{{ option }}">{{ option }}</option>
@@ -32,7 +32,7 @@
     </p>
     <p>
         <label for="classcity">City</label>: <br />
-        <select name="clases" id="classcity" required>
+        <select name="classes" id="classcity" required>
             <option value="">(choose)</option>
         {% for option in classes['city'] %}
             <option value="city:{{ option }}">{{ option }}</option>
