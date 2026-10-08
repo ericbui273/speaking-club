@@ -25,33 +25,35 @@ def get_all_classes():
     return classes
 
 def get_classes(meetup_id):
-    sql = "SELECT title, value FROM meetup_classes WHERE id = ?"
+    sql = "SELECT title, value FROM meetup_classes WHERE meetup_id = ?"
     return db.query(sql, [meetup_id])
 
-def add_meetup(title, languages, date_time, venue, avail_slot, content, host_id, classes):
-    sql = """INSERT INTO meetup (title, languages, date_time, venue, avail_slot, content, host_id) 
-            VALUES(?,?,?,?,?,?,?)"""
-    db.execute(sql,[title, languages, date_time, venue, avail_slot, content, host_id])
+def add_meetup(title, date_time, venue, avail_slot, content, host_id, classes):
+    sql = """INSERT INTO meetup (title, date_time, venue, avail_slot, content, host_id) 
+            VALUES(?,?,?,?,?,?)"""
+    db.execute(sql,[title, date_time, venue, avail_slot, content, host_id])
     meetup_id = db.last_insert_id()
 
-    sql = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
-    for class_title, class_value in classes:
-        db.execute(sql, [meetup_id, class_title, class_value])
+    sql2 = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
+    for i in classes:
+        class_title, class_value = i[0], i[1]
+        db.execute(sql2, [meetup_id, class_title, class_value])
+    print("all classes added (or not)")
 
     return meetup_id
 
-def edit_meetup(title, languages, date_time, venue, avail_slot, content, id, classes):
+def edit_meetup(title, date_time, venue, avail_slot, content, id, classes):
     sql = """UPDATE meetup
-            SET title = ?, languages = ?, date_time = ?, venue = ?, avail_slot = ?, content = ?
+            SET title = ?, date_time = ?, venue = ?, avail_slot = ?, content = ?
             WHERE id = ?"""
-    db.execute(sql,[title, languages, date_time, venue, avail_slot, content, id])
+    db.execute(sql,[title, date_time, venue, avail_slot, content, id])
 
     sql = "DELETE FROM meetup_classes WHERE meetup_id = ?"
     db.execute(sql, [id])
 
     sql = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
-    for class_title, class_value in classes:
-        db.execute(sql, [id, class_title, class_value])
+    for class_title in classes:
+        db.execute(sql, [id, class_title, classes[class_title]])
 
 def remove_meetup(meetup_id):
     sql = "DELETE FROM participants WHERE event_id = ?"

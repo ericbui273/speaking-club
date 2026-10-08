@@ -77,7 +77,6 @@ def attending(meetup_id):
 
     if request.method == "GET":
         return render_template("attending.html", meetup = meetup)
-    print(request.form)
     user_id = session["user_id"]
     name = request.form["name"]
     if not name or len(name) > 50:
@@ -102,19 +101,22 @@ def new_post():
         return render_template("new_post.html", classes=classes)
 
     title = request.form["title"]
-    content = request.form["content"]
-    languages = request.form["languages"]
-    if not title or not languages or len(languages) > 50 or len(title) > 100 or len(content) > 5000:
+    if not title or len(title) > 100:
         abort(403)
+    content = request.form["content"]
     
     date_time = request.form["date_time"]
     venue = request.form["venue"]
+    if not date_time or not venue or len(venue) > 100:
+        abort(403)
+
     avail_slot = request.form["avail_slot"]
     host_id = session["user_id"]
 
     all_classes = forum.get_all_classes()
 
     classes = []
+
     for entry in request.form.getlist("classes"):
         if entry:
             class_title, class_value = entry.split(":")
@@ -124,7 +126,8 @@ def new_post():
                 abort(403)
             classes.append((class_title, class_value))
 
-    meetup_id = forum.add_meetup(title, languages, date_time, venue, avail_slot, content, host_id, classes)
+
+    meetup_id = forum.add_meetup(title, date_time, venue, avail_slot, content, host_id, classes)
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
@@ -137,25 +140,37 @@ def edit(meetup_id):
     if meetup["host_id"] != session["user_id"]:
         abort(403)
 
+    classes = {}
+    for my_class in forum.get_all_classes():
+        classes[my_class] = ""
+    for entry in forum.get_classes(meetup_id):
+        classes[entry["title"]] = entry["value"]
+
     if request.method == "GET":
-        return render_template("edit.html", meetup = meetup)
+        return render_template("edit.html", meetup = meetup, classes=classes, all_classes = forum.get_all_classes())
 
     title = request.form["title"] 
     if not title or len(title) > 100:
         abort(403)
 
-    languages = request.form["languages"]
-    if not languages or len(languages) > 100:
+    date_time = request.form["date_time"] 
+    venue = request.form["venue"]
+    if not date_time or not venue or len(venue) > 100:
         abort(403)
 
-    date_time = request.form["date_time"] 
-    venue = request.form["venue"] 
     avail_slot = request.form["avail_slot"] 
     content = request.form["content"]
     if len(content) > 5000:
         abort(403)
 
-    forum.edit_meetup(title, languages, date_time, venue, avail_slot, content, meetup_id)
+    for entry in request.form.getlist("classes"):
+        if entry:
+            class_title, class_value = entry.split(":")
+            if class_title not in classes:
+                abort(403)
+            classes[class_title] = class_value
+
+    forum.edit_meetup(title, date_time, venue, avail_slot, content, meetup_id,classes)
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/remove/<int:meetup_id>", methods = ["GET","POST"])
@@ -173,8 +188,6 @@ def remove(meetup_id):
         return render_template("remove.html", meetup = meetup)
 
     if request.method == "POST":
-        print(request.method)
-        print(request.form)
         if "continue" in request.form:
             forum.remove_meetup(meetup_id)
             return redirect("/")
