@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import abort, redirect, render_template, request, session
+from flask import abort, redirect, render_template, request, session, make_response
 import config, users, forum
 
 app = Flask(__name__)
@@ -70,6 +70,16 @@ def add_image():
         user_id = session["user_id"]
         users.update_image(user_id, image)
         return redirect("/user/" + str(user_id))
+
+@app.route("/image/<int:user_id>")
+def show_image(user_id):
+    image = users.get_image(user_id)
+    if not image:
+        abort(404)
+
+    response = make_response(bytes(image))
+    response.headers.set("Content-Type", "image/jpeg")
+    return response
 
 @app.route("/logout")
 def logout():
@@ -243,6 +253,8 @@ def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
         abort(404)
+    if "user_id" in session:
+        print(session["user_id"])
     host_events = users.get_host_events(user_id)
     attending_events = users.get_attending_events(user_id)
     return render_template("user.html", user = user, host_events = host_events, attending_events=attending_events)

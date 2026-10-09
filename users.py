@@ -18,24 +18,16 @@ def check_login(username, password):
     return None
 
 def get_user(user_id):
-    sql = "SELECT username FROM users WHERE id = ?"
+    sql = """SELECT username, id, image IS NOT NULL as has_image 
+            FROM users WHERE id = ?"""
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
 def get_host_events(user_id):
-    sql = """SELECT m.id, m.title AS meetup_title, m.date_time,
-            c.title AS class_title, c.value AS class_value
-            FROM meetup AS m, meetup_classes AS c 
-            WHERE m.host_id = ?, m.id = c.meetup_id"""
-    result = db.query(sql, [user_id])
-    events = {}
-    for entry in result:
-        for col in entry.keys():
-            if col == "id" and entry[col] not in events:
-                events[entry[col]] = {}
-            events[entry["id"]][col] = entry[col]
-    return entry
-        
+    sql = """SELECT id, title, date_time
+            FROM meetup
+            WHERE host_id = ?"""
+    return db.query(sql, [user_id])    
 
 def get_attending_events(user_id):
     sql = """SELECT m.id, m.title, m.date_time, u.username, m.host_id
@@ -43,3 +35,12 @@ def get_attending_events(user_id):
             WHERE m.id = p.event_id AND m.host_id = u.id
             AND p.user_id = ?"""
     return db.query(sql,[user_id])
+
+def update_image(user_id, image):
+    sql = "UPDATE users SET image = ? WHERE id = ?"
+    db.execute(sql, [image, user_id])
+
+def get_image(user_id):
+    sql = "SELECT image FROM users WHERE id = ?"
+    result = db.query(sql, [user_id])
+    return result[0][0] if result else None

@@ -8,8 +8,30 @@
 <body>
     <h1>User {{ user.username }}</h1>
 
+    {% if user.has_image %}
+    <img src="/image/{{ user.id }}">
+    {% endif %}
+
+    {% if session.user_id == user.id %}
     <p>
-        User has hosted {{ host_events | count}} meetups and participated in {{ attending_events | count}} meetups
+        <a href="/add_image">Lisää profiilikuva</a>
+    </p>
+    {% endif %}
+    <p>
+        User has hosted {{ host_events | count}}
+        {% if host_events | count == 1 %}
+            meetup
+        {% else %}
+            meetups
+        {% endif %} 
+
+        and participated in {{ attending_events | count}}
+
+        {% if attending_events | count == 1 %}
+            meetup
+        {% else %}
+            meetups
+        {% endif %}
     </p>
 
     <h2>Hosted events</h2>
@@ -20,7 +42,7 @@
                 {{ event.title }}
             </a>
             <br />
-            Language: {{ event.language }}, time: {{ event.date_time }}
+            Time: {{ event.date_time }}
         </li>
     {% endfor %}
     </ul>
@@ -33,10 +55,8 @@
                 {{ event.title }}
             </a>
             <br />
-            Hosted by <a href="/user/{{ event.host_id }}">
-                {{ event.username }}
-            </a>
-            Language: {{ event.language }}, time: {{ event.date_time }}
+            Hosted by <a href="/user/{{ event.host_id }}">{{ event.username}}</a> 
+             | Time: {{ event.date_time }}
         </li>
     {% endfor %}
     </ul>
