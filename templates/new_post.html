@@ -17,8 +17,17 @@
         <label for="classlang">Language</label>: <br />
         <select name="classes" id="classlang">
             <option value="">(choose)</option>
-        {% for option in classes['language'] %}
-            <option value="language:{{ option }}">{{ option }}</option>
+        {% for option in classes['Language'] %}
+            <option value="Language:{{ option }}">{{ option }}</option>
+        {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label for="classlevel">Suitable level</label>: <br />
+        <select name="classes" id="classlevel">
+            <option value="">(choose)</option>
+        {% for option in classes['Level'] %}
+            <option value="Level:{{ option }}">{{ option }}</option>
         {% endfor %}
         </select>
     </p>
@@ -34,8 +43,8 @@
         <label for="classcity">City</label>: <br />
         <select name="classes" id="classcity" required>
             <option value="">(choose)</option>
-        {% for option in classes['city'] %}
-            <option value="city:{{ option }}">{{ option }}</option>
+        {% for option in classes['City'] %}
+            <option value="City:{{ option }}">{{ option }}</option>
         {% endfor %}
         </select>
     </p>

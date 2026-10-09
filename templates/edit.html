@@ -17,11 +17,24 @@
         <label for="classlang">Language</label>: <br />
         <select name="classes" id="classlang">
             <option value="">(choose)</option>
-        {% for option in all_classes['language'] %}
-            {% if option == classes['language'] %}
-                <option value="language:{{ option }}" selected>{{ option }}</option>
+        {% for option in all_classes['Language'] %}
+            {% if option == classes['Language'] %}
+                <option value="Language:{{ option }}" selected>{{ option }}</option>
             {% else %}
-                <option value="language:{{ option }}">{{ option }}</option>
+                <option value="Language:{{ option }}">{{ option }}</option>
+            {% endif %}
+        {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label for="classlevel">Suitable level</label>: <br />
+        <select name="classes" id="classlevel">
+            <option value="">(choose)</option>
+        {% for option in all_classes['Level'] %}
+            {% if option == classes['Level'] %}
+                <option value="Level:{{ option }}" selected>{{ option }}</option>
+            {% else %}
+                <option value="Level:{{ option }}">{{ option }}</option>
             {% endif %}
         {% endfor %}
         </select>
@@ -38,11 +51,11 @@
         <label for="classcity">City</label>: <br />
         <select name="classes" id="classcity" required>
             <option value="">(choose)</option>
-        {% for option in all_classes['city'] %}
-            {% if option == classes['city'] %}
-                <option value="city:{{ option }}" selected>{{ option }}</option>
+        {% for option in all_classes['City'] %}
+            {% if option == classes['City'] %}
+                <option value="City:{{ option }}" selected>{{ option }}</option>
             {% else %}
-                <option value="city:{{ option }}">{{ option }}</option>
+                <option value="City:{{ option }}">{{ option }}</option>
             {% endif %}
         {% endfor %}
         </select>

@@ -66,7 +66,8 @@ def show_meetup(meetup_id):
         attending_meetups = forum.get_attending_meetups(session["user_id"])
     else:
         attending_meetups = []
-    return render_template("meetup.html", meetup = meetup, attending_meetups = attending_meetups)
+    classes = forum.get_classes(meetup_id)
+    return render_template("meetup.html", classes = classes, meetup = meetup, attending_meetups = attending_meetups)
 
 @app.route("/attending/<int:meetup_id>", methods = ["GET","POST"])
 def attending(meetup_id):
@@ -141,7 +142,8 @@ def edit(meetup_id):
         abort(403)
 
     classes = {}
-    for my_class in forum.get_all_classes():
+    all_classes = forum.get_all_classes()
+    for my_class in all_classes:
         classes[my_class] = ""
     for entry in forum.get_classes(meetup_id):
         classes[entry["title"]] = entry["value"]
@@ -166,8 +168,9 @@ def edit(meetup_id):
     for entry in request.form.getlist("classes"):
         if entry:
             class_title, class_value = entry.split(":")
-            if class_title not in classes:
+            if class_title not in all_classes or class_value not in all_classes[class_title]:
                 abort(403)
+            print(all_classes[class_title])
             classes[class_title] = class_value
 
     forum.edit_meetup(title, date_time, venue, avail_slot, content, meetup_id,classes)

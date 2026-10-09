@@ -15,13 +15,13 @@
   <p>
     {{ meetup.content }}
   </p>
-  <p>
-    Time: {{ meetup.date_time }}
-    <br />
-    Location: {{ meetup.venue }}
-    <br />
-    Language: {{ meetup.languages }}
-  </p>
+  <ul>
+    <li>Time: {{ meetup.date_time }}</li>
+    <li>Venue: {{ meetup.venue }}</li>
+    {% for class in classes %}
+    <li>{{ class.title }}: {{ class.value }}</li>
+    {% endfor %}
+  </ul>
 
   <p>
     {% if session.user_id and session.user_id != meetup.host_id and meetup.id not in attending_meetups %}
