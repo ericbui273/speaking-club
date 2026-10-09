@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Add profile picture</title>
+    </head>
+    <body>
+        <h1>Add profile picture</h1>
+        <p>Upload a .jpg image no larger than 100 KB.</p>
+        <form action="/add_image" method="POST" enctype="multipart/form-data">
+            <p>
+                Kuva: <input type="file" name="image" accept=".jpg" />
+            </p>
+            <input type="submit" value="Lähetä" />
+        </form>
+    </body>
+</html>

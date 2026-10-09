@@ -51,6 +51,26 @@ def login():
     else:
         return '<p>ERROR: wrong username or password!</p><p><a href="/login">Try again</a></p>'
 
+@app.route("/add_image", methods=["GET", "POST"])
+def add_image():
+    require_login()
+
+    if request.method == "GET":
+        return render_template("add_image.html")
+
+    if request.method == "POST":
+        file = request.files["image"]
+        if not file.filename.endswith(".jpg"):
+            return "ERROR: Only .jpg images are allowed!"
+
+        image = file.read()
+        if len(image) > 100 * 1024:
+            return "ERROR: image is too big!"
+
+        user_id = session["user_id"]
+        users.update_image(user_id, image)
+        return redirect("/user/" + str(user_id))
+
 @app.route("/logout")
 def logout():
     require_login()

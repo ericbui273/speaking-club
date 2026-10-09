@@ -23,12 +23,22 @@ def get_user(user_id):
     return result[0] if result else None
 
 def get_host_events(user_id):
-    sql = """SELECT id, title, languages, date_time
-            FROM meetup WHERE host_id = ?"""
-    return db.query(sql, [user_id])
+    sql = """SELECT m.id, m.title AS meetup_title, m.date_time,
+            c.title AS class_title, c.value AS class_value
+            FROM meetup AS m, meetup_classes AS c 
+            WHERE m.host_id = ?, m.id = c.meetup_id"""
+    result = db.query(sql, [user_id])
+    events = {}
+    for entry in result:
+        for col in entry.keys():
+            if col == "id" and entry[col] not in events:
+                events[entry[col]] = {}
+            events[entry["id"]][col] = entry[col]
+    return entry
+        
 
 def get_attending_events(user_id):
-    sql = """SELECT m.id, m.title, m.languages, m.date_time, u.username, m.host_id
+    sql = """SELECT m.id, m.title, m.date_time, u.username, m.host_id
             FROM meetup AS m, participants AS p, users AS u
             WHERE m.id = p.event_id AND m.host_id = u.id
             AND p.user_id = ?"""
