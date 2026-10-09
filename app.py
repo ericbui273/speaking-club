@@ -1,3 +1,4 @@
+import math
 import sqlite3
 from flask import Flask
 from flask import abort, redirect, render_template, request, session, make_response
@@ -11,9 +12,20 @@ def require_login():
         abort(403)
 
 @app.route("/")
-def index():
-    meetups = forum.get_meetups()
-    return render_template("index.html", meetups = meetups) 
+@app.route("/<int:page>")
+def index(page=1):
+    page_size = 20
+    meetup_count = forum.meetup_count()
+    page_count = math.ceil(meetup_count / page_size)
+    page_count = max(page_count, 1)
+
+    if page < 1:
+        return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+
+    meetups = forum.get_meetups(page, page_size)
+    return render_template("index.html", page=page, page_count=page_count, meetups = meetups)
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():

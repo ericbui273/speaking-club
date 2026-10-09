@@ -1,8 +1,14 @@
 import db
 
-def get_meetups():
-    sql = "SELECT * FROM meetup"
-    return db.query(sql)
+def meetup_count():
+    return db.query("SELECT COUNT(*) FROM meetup")[0][0]
+
+def get_meetups(page, page_size):
+    sql = "SELECT * FROM meetup ORDER BY id LIMIT ? OFFSET ?"
+
+    limit = page_size
+    offset = page_size*(page-1)
+    return db.query(sql, [limit, offset])
 
 def get_meetup(meetup_id):
     sql = """SELECT m.*, u.username
