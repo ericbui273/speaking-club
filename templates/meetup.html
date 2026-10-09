@@ -21,6 +21,9 @@
     {% for class in classes %}
     <li>{{ class.title }}: {{ class.value }}</li>
     {% endfor %}
+    {% if meetup.avail_slot %}
+    <li>Available slots: {{meetup.avail_slot}}</li>
+    {% endif %}
   </ul>
 
   <p>
@@ -37,7 +40,6 @@
     <a href="/edit/{{ meetup.id }}">Edit post</a> | 
     <a href="/remove/{{ meetup.id }}">Remove post</a> <br />
   </p>
-
   <p>
     <a href="/participants/meetup/{{ meetup.id }}">List of participants</a>
     {% endif %}

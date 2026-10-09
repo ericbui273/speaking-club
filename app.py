@@ -190,7 +190,10 @@ def edit(meetup_id):
     if not date_time or not venue or len(venue) > 100:
         abort(403)
 
-    avail_slot = request.form["avail_slot"] 
+    avail_slot = int(request.form["avail_slot"])
+    if avail_slot:
+        if avail_slot < 5 or avail_slot > 50:
+            abort(403)
     content = request.form["content"]
     if len(content) > 5000:
         abort(403)
@@ -251,10 +254,10 @@ def show_participants(meetup_id):
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
     user = users.get_user(user_id)
+
     if not user:
         abort(404)
-    if "user_id" in session:
-        print(session["user_id"])
+
     host_events = users.get_host_events(user_id)
     attending_events = users.get_attending_events(user_id)
     return render_template("user.html", user = user, host_events = host_events, attending_events=attending_events)
