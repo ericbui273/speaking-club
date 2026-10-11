@@ -1,4 +1,4 @@
-import math
+import math, secrets
 import sqlite3
 from flask import Flask
 from flask import abort, redirect, render_template, request, session, make_response
@@ -9,6 +9,10 @@ app.secret_key = config.secret_key
 
 def require_login():
     if "user_id" not in session:
+        abort(403)
+
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
 @app.route("/")
@@ -59,12 +63,14 @@ def login():
 
     if user_id:
         session["user_id"] = user_id
+        session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
     else:
         return '<p>ERROR: wrong username or password!</p><p><a href="/login">Try again</a></p>'
 
 @app.route("/add_image", methods=["GET", "POST"])
 def add_image():
+    check_csrf()
     require_login()
 
     if request.method == "GET":
@@ -113,6 +119,7 @@ def show_meetup(meetup_id):
 
 @app.route("/attending/<int:meetup_id>", methods = ["GET","POST"])
 def attending(meetup_id):
+    check_csrf()
     require_login()
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
@@ -137,6 +144,7 @@ def attending(meetup_id):
 
 @app.route("/new_post", methods=["POST", "GET"])
 def new_post():
+    check_csrf()
     require_login()
 
     if request.method == "GET":
@@ -175,6 +183,7 @@ def new_post():
 
 @app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
 def edit(meetup_id):
+    check_csrf()
     require_login()
 
     meetup = forum.get_meetup(meetup_id)
@@ -223,6 +232,7 @@ def edit(meetup_id):
 
 @app.route("/remove/<int:meetup_id>", methods = ["GET","POST"])
 def remove(meetup_id):
+    check_csrf()
     require_login()
 
     meetup = forum.get_meetup(meetup_id)
@@ -273,4 +283,3 @@ def show_user(user_id):
     host_events = users.get_host_events(user_id)
     attending_events = users.get_attending_events(user_id)
     return render_template("user.html", user = user, host_events = host_events, attending_events=attending_events)
-

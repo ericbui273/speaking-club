@@ -26,6 +26,7 @@
         Write here any comment/question/need for special accommodation <br />
         <textarea name="comment" rows="5" cols="40" maxlength="5000"></textarea>
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Submit" />
     </form>
 
