@@ -1,5 +1,4 @@
-import math, secrets
-import sqlite3
+import math, secrets, sqlite3
 from flask import Flask
 from flask import abort, redirect, render_template, request, session, make_response
 import config, users, forum
@@ -18,7 +17,7 @@ def check_csrf():
 @app.route("/")
 @app.route("/<int:page>")
 def index(page=1):
-    page_size = 20
+    page_size = 10
     meetup_count = forum.meetup_count()
     page_count = math.ceil(meetup_count / page_size)
     page_count = max(page_count, 1)
@@ -70,13 +69,13 @@ def login():
 
 @app.route("/add_image", methods=["GET", "POST"])
 def add_image():
-    check_csrf()
     require_login()
 
     if request.method == "GET":
         return render_template("add_image.html")
 
     if request.method == "POST":
+        check_csrf()
         file = request.files["image"]
         if not file.filename.endswith(".jpg"):
             return "ERROR: Only .jpg images are allowed!"
@@ -119,7 +118,6 @@ def show_meetup(meetup_id):
 
 @app.route("/attending/<int:meetup_id>", methods = ["GET","POST"])
 def attending(meetup_id):
-    check_csrf()
     require_login()
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
@@ -127,6 +125,9 @@ def attending(meetup_id):
 
     if request.method == "GET":
         return render_template("attending.html", meetup = meetup)
+    
+    check_csrf()
+    
     user_id = session["user_id"]
     name = request.form["name"]
     if not name or len(name) > 50:
@@ -144,13 +145,13 @@ def attending(meetup_id):
 
 @app.route("/new_post", methods=["POST", "GET"])
 def new_post():
-    check_csrf()
     require_login()
 
     if request.method == "GET":
         classes = forum.get_all_classes()
         return render_template("new_post.html", classes=classes)
 
+    check_csrf()
     title = request.form["title"]
     if not title or len(title) > 100:
         abort(403)
@@ -183,7 +184,6 @@ def new_post():
 
 @app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
 def edit(meetup_id):
-    check_csrf()
     require_login()
 
     meetup = forum.get_meetup(meetup_id)
@@ -202,6 +202,7 @@ def edit(meetup_id):
     if request.method == "GET":
         return render_template("edit.html", meetup = meetup, classes=classes, all_classes = forum.get_all_classes())
 
+    check_csrf()
     title = request.form["title"] 
     if not title or len(title) > 100:
         abort(403)
@@ -232,7 +233,7 @@ def edit(meetup_id):
 
 @app.route("/remove/<int:meetup_id>", methods = ["GET","POST"])
 def remove(meetup_id):
-    check_csrf()
+
     require_login()
 
     meetup = forum.get_meetup(meetup_id)
@@ -246,6 +247,7 @@ def remove(meetup_id):
         return render_template("remove.html", meetup = meetup)
 
     if request.method == "POST":
+        check_csrf()
         if "continue" in request.form:
             forum.remove_meetup(meetup_id)
             return redirect("/")
@@ -274,12 +276,21 @@ def show_participants(meetup_id):
 
 
 @app.route("/user/<int:user_id>")
+@app.route("/user/<int:user_id>/")
 def show_user(user_id):
     user = users.get_user(user_id)
 
     if not user:
         abort(404)
 
-    host_events = users.get_host_events(user_id)
-    attending_events = users.get_attending_events(user_id)
-    return render_template("user.html", user = user, host_events = host_events, attending_events=attending_events)
+    host_events, host_event_count = users.get_host_events(user_id)
+    attending_events, attending_event_count = users.get_attending_events(user_id)
+    
+    return render_template(
+        "user.html", 
+        user = user, 
+        host_events = host_events, 
+        attending_events=attending_events,
+        host_event_count = host_event_count,
+        attending_event_count = attending_event_count
+    )
