@@ -28,11 +28,11 @@ CREATE TABLE classes(
     id INTEGER PRIMARY KEY,
     title TEXT,
     value TEXT
-)
+);
 
 CREATE TABLE meetup_classes (
     id INTEGER PRIMARY KEY,
     meetup_id INTEGER REFERENCE meetup,
     title TEXT,
     value TEXT
-)
+);
