@@ -6,10 +6,15 @@
 </head>
 
 <body>
-  <h1>Welcome to speaking club!</h1>
+  <h1>Speaking club</h1>
+  {% if user %}
+
+  <p>
+    Welcome <a href="/user/{{ user.id }}">{{ user.username }}</a>.
+    Great to see you!
+  </p>
   
   <p>
-    {% if session.user_id %}
     <a href="/logout">Log out</a> | 
     <a href="/new_post">Create new post</a>
     {% else %}
