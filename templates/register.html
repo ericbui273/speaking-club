@@ -6,10 +6,16 @@
 </head>
 
 <body>
+  <h1>Create new account</h1>
   <form action="/register" method="post">
     <p>
+      {% for error in get_flashed_messages() %}
+      <b>{{ error }} </b> 
+    </p>
+    {% endfor %}
+    <p>
       Username: <br />
-      <input type="text" name="username" required minlength="5" maxlength="50" />
+      <input type="text" name="username" value="{{ filled.username }}" required minlength="5" maxlength="50" />
     </p>
         <p class ="help-text">
       Username should contain at least 5 and at most 50 characters.

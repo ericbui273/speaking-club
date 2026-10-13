@@ -1,6 +1,6 @@
 import math, secrets, sqlite3
 from flask import Flask
-from flask import abort, redirect, render_template, request, session, make_response
+from flask import make_response, abort, redirect, render_template, request, session, flash
 import config, users, forum
 
 app = Flask(__name__)
@@ -28,32 +28,42 @@ def index(page=1):
         return redirect("/" + str(page_count))
 
     meetups = forum.get_meetups(page, page_size)
-    return render_template("index.html", page=page, page_count=page_count, meetups = meetups)
+
+    if "user_id" in session:
+        user = users.get_user(session["user_id"])
+    else:
+        user = None
+    return render_template("index.html", user=user, page=page, page_count=page_count, meetups = meetups)
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():
     if request.method == "GET":
-        return render_template("register.html")
+        return render_template("register.html", filled={})
 
     username = request.form["username"]
     password1 = request.form["password1"]
 
     if not username or not password1 or len(username) not in range(5,51) or len(password1) < 8:
-        abort(403)
+        return("Username and password must meet the length requirement!", 403)
+    
     password2 = request.form["password2"]
     if password1 != password2:
-        return "ERROR: Passwords don't march!"
+        flash("ERROR: Passwords don't march!")
+        filled = {"username": username}
+        return render_template("register.html", filled=filled)
 
     try:
         users.create_user(username,password1)
         return '<p>Account has been created.</p><p><a href="/login">To the login page</a> <a href="/">To the front page</a></p>'
     except sqlite3.IntegrityError:
-        return '<p>ERROR: username is not available!</p><p><a href="/register">Try again</a></p>'
+        flash("ERROR: username is not available!")
+        filled = {"username": username}
+        return render_template("register.html", filled=filled)
 
 @app.route("/login", methods=["POST","GET"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html", filled={})
 
     username = request.form["username"]
     password = request.form["password"]
@@ -65,7 +75,9 @@ def login():
         session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
     else:
-        return '<p>ERROR: wrong username or password!</p><p><a href="/login">Try again</a></p>'
+        flash("ERROR: wrong username or password!")
+        filled = {"username": username}
+        return render_template("login.html", filled=filled)
 
 @app.route("/add_image", methods=["GET", "POST"])
 def add_image():
@@ -78,11 +90,13 @@ def add_image():
         check_csrf()
         file = request.files["image"]
         if not file.filename.endswith(".jpg"):
-            return "ERROR: Only .jpg images are allowed!"
+            flash("ERROR: Only .jpg images are allowed!")
+            return render_template("add_image.html")
 
         image = file.read()
         if len(image) > 100 * 1024:
-            return "ERROR: image is too big!"
+            flash("ERROR: image is too big!")
+            return render_template("add_image.html")
 
         user_id = session["user_id"]
         users.update_image(user_id, image)
@@ -92,7 +106,7 @@ def add_image():
 def show_image(user_id):
     image = users.get_image(user_id)
     if not image:
-        abort(404)
+        return("User account does not exist or user does not have any image.", 404)
 
     response = make_response(bytes(image))
     response.headers.set("Content-Type", "image/jpeg")
