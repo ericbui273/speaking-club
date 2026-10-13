@@ -1,8 +1,5 @@
-import random
-import sqlite3
-
-import random
-import sqlite3
+import random, sqlite3
+from werkzeug.security import generate_password_hash
 
 db = sqlite3.connect("database.db")
 
@@ -10,13 +7,16 @@ db.execute("DELETE FROM users")
 db.execute("DELETE FROM meetup")
 db.execute("DELETE FROM participants")
 
-user_count = 1000
+user_count = 100
 meetup_count = 10**5
 participant_count = 10**6
 
+
 for i in range(1, user_count + 1):
-    db.execute("INSERT INTO users (username) VALUES (?)",
-               ["user" + str(i)])
+    #create user with username user+num, password password+num, the password hashing might take a while
+    password_hash = generate_password_hash(f"password{i}")
+    db.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)",
+               ["user" + str(i), password_hash])
 
 for i in range(1, meetup_count + 1):
     host_id = random.randint(1, user_count)
