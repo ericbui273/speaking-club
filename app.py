@@ -225,7 +225,6 @@ def edit(meetup_id):
             class_title, class_value = entry.split(":")
             if class_title not in all_classes or class_value not in all_classes[class_title]:
                 abort(403)
-            print(all_classes[class_title])
             classes[class_title] = class_value
 
     forum.edit_meetup(title, date_time, venue, avail_slot, content, meetup_id,classes)
@@ -276,21 +275,39 @@ def show_participants(meetup_id):
 
 
 @app.route("/user/<int:user_id>")
-@app.route("/user/<int:user_id>/")
 def show_user(user_id):
     user = users.get_user(user_id)
 
     if not user:
         abort(404)
 
-    host_events, host_event_count = users.get_host_events(user_id)
-    attending_events, attending_event_count = users.get_attending_events(user_id)
+    host_page = max(request.args.get("host", type=int, default=1), 1)
+    attending_page = max(request.args.get("attending", type=int, default=1), 1)
+    for value in request.args.keys():
+        if value not in ("host", "attending"):
+            return (f"Wrong address, '{value}' page does not exist.", 404) 
     
+    page_size = 10
+    host_count = users.host_event_count(user_id)
+    attending_count = users.attending_event_count(user_id)
+    host_page_count = max(math.ceil(host_count / page_size), 1)
+    attending_page_count = max(math.ceil(attending_count / page_size), 1)
+
+    host_page = min(host_page, host_page_count)
+    attending_page = min(attending_page, attending_page_count)
+
+    host_events = users.get_host_events(user_id, host_page, page_size)
+    attending_events = users.get_attending_events(user_id, attending_page, page_size)
+
     return render_template(
         "user.html", 
         user = user, 
         host_events = host_events, 
         attending_events=attending_events,
-        host_event_count = host_event_count,
-        attending_event_count = attending_event_count
+        host_count = host_count,
+        attending_count = attending_count,
+        host_page_count=host_page_count,
+        attending_page_count=attending_page_count,
+        host_page=host_page,
+        attending_page=attending_page
     )
