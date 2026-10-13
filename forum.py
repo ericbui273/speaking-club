@@ -44,7 +44,6 @@ def add_meetup(title, date_time, venue, avail_slot, content, host_id, classes):
     for i in classes:
         class_title, class_value = i[0], i[1]
         db.execute(sql2, [meetup_id, class_title, class_value])
-    print("all classes added (or not)")
 
     return meetup_id
 
