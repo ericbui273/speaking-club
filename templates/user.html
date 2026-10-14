@@ -13,7 +13,7 @@
     <p><b>{{ message }}</b></p>
     {% endfor %}
     {% if user.has_image %}
-    <img src="/image/{{ user.id }}" class=".profile-picture">
+    <img src="/image/{{ user.id }}" alt="Profile picture of user {{ user.username }}">
     {% endif %}
 
     {% if session.user_id == user.id %}
