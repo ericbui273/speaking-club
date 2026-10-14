@@ -63,21 +63,22 @@ def register():
 @app.route("/login", methods=["POST","GET"])
 def login():
     if request.method == "GET":
-        return render_template("login.html", filled={})
+        return render_template("login.html", filled={}, next_page=request.referrer)
 
     username = request.form["username"]
     password = request.form["password"]
+    next_page = request.form["next_page"]
 
     user_id = users.check_login(username, password)
 
     if user_id:
         session["user_id"] = user_id
         session["csrf_token"] = secrets.token_hex(16)
-        return redirect("/")
+        return redirect(next_page)
     else:
         flash("ERROR: wrong username or password!")
         filled = {"username": username}
-        return render_template("login.html", filled=filled)
+        return render_template("login.html", filled=filled, next_page=next_page)
 
 @app.route("/add_image", methods=["GET", "POST"])
 def add_image():
@@ -100,6 +101,7 @@ def add_image():
 
         user_id = session["user_id"]
         users.update_image(user_id, image)
+        flash("Updated image successfully")
         return redirect("/user/" + str(user_id))
 
 @app.route("/image/<int:user_id>")

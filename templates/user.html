@@ -3,14 +3,17 @@
 
 <head>
   <title>User {{ user.username }}</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
     <h1>User {{ user.username }}</h1>
     <p><a href="/">Back to front page</a></p>
-
+    {% for message in get_flashed_messages() %}
+    <p><b>{{ message }}</b></p>
+    {% endfor %}
     {% if user.has_image %}
-    <img src="/image/{{ user.id }}">
+    <img src="/image/{{ user.id }}" class=".profile-picture">
     {% endif %}
 
     {% if session.user_id == user.id %}
