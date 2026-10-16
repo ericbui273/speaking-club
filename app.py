@@ -61,7 +61,9 @@ def register():
 
     try:
         users.create_user(username,password1)
-        return '<p>Account has been created.</p><p><a href="/login">To the login page</a> <a href="/">To the front page</a></p>'
+        flash("""You have successfully created a new account. 
+                Log in now to host and join speaking meetups!""")
+        return redirect("/")
     except sqlite3.IntegrityError:
         flash("ERROR: username is not available!")
         filled = {"username": username}
@@ -81,6 +83,7 @@ def login():
     if user_id:
         session["user_id"] = user_id
         session["csrf_token"] = secrets.token_hex(16)
+        flash("You are successfully logged in.")
         return redirect(next_page)
     else:
         flash("ERROR: wrong username or password!")
