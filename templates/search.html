@@ -12,11 +12,12 @@
     <p>
       Search keyword:
       {% if query %}
-      <input type="text" name="query" value="{{ query }}" />
+      <input type="text" name="query" required value="{{ query }}" />
       {% else %}
-      <input type="text" name="query" />
+      <input type="text" name="query" required />
       {% endif %}
     </p>
+        
     <input type="submit" value="Search" /> | <a href="/">Frontpage</a>
   </form>
 
@@ -25,17 +26,19 @@
   <h2>Results</h2>
   
   <ul>
-  {% for session in results %}
+  {% if results != [] %}
+  {% for meetup in results %}
   <p>
-    <a href="/session/{{ session.id }}">{{ session.title }}</a>
+    <a href="/meetup/{{ meetup.id }}">{{ meetup.title }}</a>
     <br />
-    Language: {{ session.languages }} , {{ session.avail_slot }} places available
-    <br />
-    {{ session.date_time }}, venue: {{ session.venue }}
+    {{ meetup.date_time }}, venue: {{ meetup.venue }}
   </p>
   <hr />
   {% endfor %}
   </ul>
+  {% else %}
+  <p>No meetup found :( Do you want to try another keyword?</p>
+  {% endif %}
   {% endif %}
 </body>
 
