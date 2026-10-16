@@ -21,8 +21,8 @@ for i in range(1, user_count + 1):
 for i in range(1, meetup_count + 1):
     host_id = random.randint(1, user_count)
     slot = random.randint(5, 50)
-    db.execute("""INSERT INTO meetup (title, date_time, venue, avail_slot, content, host_id) 
-                VALUES (?, datetime('now'), ?, ?, ?, ?)""",
+    db.execute("""INSERT INTO meetup (title, date_time, venue, avail_slot, content, host_id, participant_number) 
+                VALUES (?, datetime('now'), ?, ?, ?, ?, 0)""",
                ["meetup" + str(i),  "venue" + str(i), slot, "message" + str(i), host_id])
 
 for i in range(1, participant_count + 1):
