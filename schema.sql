@@ -12,7 +12,7 @@ CREATE TABLE meetup (
     date_time TEXT,
     venue TEXT,
     avail_slot INTEGER,
-    partipant_number INTEGER,
+    participant_number INTEGER,
     content TEXT,
     host_id INTEGER REFERENCES users
 );
