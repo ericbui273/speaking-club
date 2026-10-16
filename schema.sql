@@ -12,6 +12,7 @@ CREATE TABLE meetup (
     date_time TEXT,
     venue TEXT,
     avail_slot INTEGER,
+    partipant_number INTEGER,
     content TEXT,
     host_id INTEGER REFERENCES users
 );
@@ -22,7 +23,8 @@ CREATE TABLE participants (
     event_id INTEGER REFERENCES meetup,
     participant_name TEXT, 
     language_level TEXT, 
-    comment TEXT);
+    comment TEXT
+);
 
 CREATE TABLE classes(
     id INTEGER PRIMARY KEY,
