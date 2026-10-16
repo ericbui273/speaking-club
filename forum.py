@@ -35,9 +35,9 @@ def get_classes(meetup_id):
     return db.query(sql, [meetup_id])
 
 def add_meetup(title, date_time, venue, avail_slot, content, host_id, classes):
-    sql = """INSERT INTO meetup (title, date_time, venue, avail_slot, content, host_id) 
+    sql = """INSERT INTO meetup (title, date_time, venue, avail_slot, content, host_id, participant_number) 
             VALUES(?,?,?,?,?,?)"""
-    db.execute(sql,[title, date_time, venue, avail_slot, content, host_id])
+    db.execute(sql,[title, date_time, venue, avail_slot, content, host_id, 0])
     meetup_id = db.last_insert_id()
 
     sql2 = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
@@ -73,9 +73,9 @@ def remove_meetup(meetup_id):
 def search(query):
     sql = """SELECT m.*, u.username
             FROM meetup AS m, users AS u
-            WHERE m.host_id = u.id AND (m.title LIKE ? OR m.languages LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
+            WHERE m.host_id = u.id AND (m.title LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
             ORDER BY m.date_time"""
-    return db.query(sql,["%" + query + "%"]*5)
+    return db.query(sql,["%" + query + "%"]*4)
 
 def add_participant(user_id, event_id, name, level, comment):
     sql = """INSERT INTO participants (user_id, event_id, participant_name, language_level, comment)
@@ -83,6 +83,12 @@ def add_participant(user_id, event_id, name, level, comment):
     db.execute(sql,[user_id,event_id,name,level,comment])
     participant_id = db.last_insert_id()
     return participant_id
+
+def update_participant_number(meetup_id):
+    sql = """UPDATE meetup 
+            SET participant_number = participant_number+1
+            WHERE id = ?"""
+    db.execute(sql, [meetup_id])
 
 def get_attending_meetups(user_id):
     sql = """SELECT event_id FROM participants
