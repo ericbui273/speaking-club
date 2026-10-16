@@ -13,7 +13,7 @@
     Host: <a href="/user/{{ meetup.host_id }}">{{ meetup.username }}</a>
   </p>
   <p>
-    {{ meetup.content }}
+    {{ meetup.content | show_lines }}
   </p>
   <ul>
     <li>Time: {{ meetup.date_time }}</li>
