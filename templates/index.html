@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html>
-
+<link rel="stylesheet" href="/static/main.css">
 <head>
   <title>Speaking club</title>
 </head>
 
 <body>
+  <div class="header">
   <h1>Speaking club</h1>
   {% if user %}
+  <span>Welcome <a href="/user/{{ user.id }}">{{ user.username }}</a>.
+  Great to see you!</span>
+  {% else %}
+  <span>Create an account or log in to join and host speaking meetups!</span>
+  {% endif %}
+  </div>
+  <nav>
+    <ul>
+      {% if user %}
+      <li><a href="/">Front page</a></li>
+      <li><a href="/logout">Log out</a></li>
+      <li><a href="/new_post">Create new post</a></li>
+      {% else %}
+      <li><a href="/register">Create an account</a></li>
+      <li><a href="/login">Log in</a></li>
+      {% endif %}
+      <li><a href="/search">Search by keyword</a></li>
+    </ul>
+  </nav>
 
-  <p>
-    Welcome <a href="/user/{{ user.id }}">{{ user.username }}</a>.
-    Great to see you!
-  </p>
-  
-  <p>
-    <a href="/logout">Log out</a> | 
-    <a href="/new_post">Create new post</a>
-    {% else %}
-    <a href="/register">Create an account</a> | 
-    <a href="/login">Log in</a>
-    {% endif %}
-    | <a href="/search">Search by keyword</a>
-  </p>
-
-  <hr />
+  {% for message in get_flashed_messages() %}
+  <div class="info">
+    {{ message }}
+  </div>
+  {% endfor %}
+  <div class="content">
+  <h2>Upcoming meetups</h2>
   {% for meetup in meetups %}
+  <ul>
+  <div class="meetup">
   <p>
     <a href="/meetup/{{ meetup.id }}">{{ meetup.title }}</a>
     <br />
@@ -33,7 +46,8 @@
     <br />
     {{ meetup.date_time }}, venue: {{ meetup.venue }}
   </p>
-  <hr />
+  </div>
+  </ul>
   {% endfor %}
   <p>
     <a href="/{{ page - 1 }}">&lt;&lt;</a>
@@ -41,7 +55,7 @@
     <a href="/{{ page + 1 }}">&gt;&gt;</a>
   </p>
   <hr />
-
+  </div>
 </body>
 
 </html>
