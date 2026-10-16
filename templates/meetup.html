@@ -21,14 +21,18 @@
     {% for class in classes %}
     <li>{{ class.title }}: {{ class.value }}</li>
     {% endfor %}
-    {% if meetup.avail_slot %}
-    <li>Available slots: {{meetup.avail_slot}}</li>
+    {% if meetup.avail_slot > meetup.participant_number %}
+    <li>Available slots: {{ meetup.avail_slot-meetup.participant_number }}/{{meetup.avail_slot}}</li>
+    {% else %}
+    <li><b><i>There are no available slots left for this event</i></b></li>
     {% endif %}
   </ul>
 
   <p>
     {% if session.user_id and session.user_id != meetup.host_id and meetup.id not in attending_meetups %}
+    {% if meetup.participant_number < meetup.avail_slot %}
     <a href="/attending/{{ meetup.id }}">Attending meetup</a>
+    {% endif %}
     {% elif not session.user_id %}
     <a href="/login">Log in to attend meetup</a> <br />
     Does not have an account? <a href="/register">Create an account</a>

@@ -62,7 +62,7 @@
     </p>
     <p>
         Target participant amount: <br />
-        <input type="number" name="avail_slot" min="5" max="50" value = "{{ meetup.avail_slot }}" />
+        <input type="number" name="avail_slot" min="{{ [5, meetup.participant_number] | max }}" max="50" value = "{{ meetup.avail_slot }}" />
     </p>
     <p>
         Post content: <br />

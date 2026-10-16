@@ -2,6 +2,7 @@ import math, secrets, sqlite3
 from flask import Flask
 from flask import make_response, abort, redirect, render_template, request, session, flash
 import config, users, forum
+import markupsafe
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -13,6 +14,12 @@ def require_login():
 def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 @app.route("/")
 @app.route("/<int:page>")
@@ -157,6 +164,8 @@ def attending(meetup_id):
         abort(403)
 
     forum.add_participant(user_id,meetup_id, name, level, comment)
+    forum.update_participant_number(meetup_id)
+
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/new_post", methods=["POST", "GET"])
@@ -173,12 +182,16 @@ def new_post():
         abort(403)
     content = request.form["content"]
     
-    date_time = request.form["date_time"]
+    request_date_time = request.form["date_time"]
+    date_time = request_date_time[:10] + " " + request_date_time[11:]
     venue = request.form["venue"]
     if not date_time or not venue or len(venue) > 100:
         abort(403)
 
-    avail_slot = request.form["avail_slot"]
+    avail_slot = int(request.form["avail_slot"])
+    if avail_slot < 5 or avail_slot > 50:
+        abort(403)
+
     host_id = session["user_id"]
 
     all_classes = forum.get_all_classes()
@@ -223,14 +236,15 @@ def edit(meetup_id):
     if not title or len(title) > 100:
         abort(403)
 
-    date_time = request.form["date_time"] 
+    request_date_time = request.form["date_time"]
+    date_time = request_date_time[:10] + " " + request_date_time[11:]
+
     venue = request.form["venue"]
     if not date_time or not venue or len(venue) > 100:
         abort(403)
 
     avail_slot = int(request.form["avail_slot"])
-    if avail_slot:
-        if avail_slot < 5 or avail_slot > 50:
+    if avail_slot < 5 or avail_slot > 50 or avail_slot < meetup["participant_number"]:
             abort(403)
     content = request.form["content"]
     if len(content) > 5000:
@@ -271,8 +285,10 @@ def remove(meetup_id):
 @app.route("/search")
 def search():
     query = request.args.get("query")
+
     results = forum.search(query) if query else []
-    return render_template("search.html", query=query, results=results)
+
+    return render_template("search.html", query=query,results=results)
 
 @app.route("/participants/meetup/<int:meetup_id>")
 def show_participants(meetup_id):
