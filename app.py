@@ -66,6 +66,7 @@ def register():
                 "info"
         )
         return redirect("/")
+
     except sqlite3.IntegrityError:
         flash("ERROR: username is not available!", "error")
         filled = {"username": username}
@@ -114,6 +115,7 @@ def add_image():
         user_id = session["user_id"]
         users.update_image(user_id, image)
         flash("Updated image successfully", "info")
+
         return redirect("/user/" + str(user_id))
 
 @app.route("/image/<int:user_id>")
@@ -124,6 +126,7 @@ def show_image(user_id):
 
     response = make_response(bytes(image))
     response.headers.set("Content-Type", "image/jpeg")
+
     return response
 
 @app.route("/logout")
@@ -137,10 +140,12 @@ def show_meetup(meetup_id):
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
         abort(404)
+
     if "user_id" in session:
         attending_meetups = forum.get_attending_meetups(session["user_id"])
     else:
         attending_meetups = []
+
     classes = forum.get_classes(meetup_id)
     user = users.get_user(session["user_id"]) if "user_id" in session else None
     return render_template("meetup.html", user=user, classes = classes, meetup = meetup, attending_meetups = attending_meetups)
@@ -171,7 +176,8 @@ def attending(meetup_id):
 
     forum.add_participant(user_id,meetup_id, name, level, comment)
     forum.update_participant_number(meetup_id)
-
+    flash("You have successfully registered to attend this meetup!", "info")
+    
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/new_post", methods=["POST", "GET"])
@@ -215,6 +221,9 @@ def new_post():
 
 
     meetup_id = forum.add_meetup(title, date_time, venue, avail_slot, content, host_id, classes)
+    
+    flash("Meetup created successfully.", "info")
+    
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
@@ -264,6 +273,7 @@ def edit(meetup_id):
             classes[class_title] = class_value
 
     forum.edit_meetup(title, date_time, venue, avail_slot, content, meetup_id,classes)
+    flash("Meetup edited successfully.", "info")
     return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/remove/<int:meetup_id>", methods = ["GET","POST"])
@@ -285,7 +295,9 @@ def remove(meetup_id):
         check_csrf()
         if "continue" in request.form:
             forum.remove_meetup(meetup_id)
+            flash(f"Your meetup {meetup["title"]} has been removed.", "info")
             return redirect("/")
+        
         return redirect("/meetup/" + str(meetup_id))
 
 @app.route("/search")
