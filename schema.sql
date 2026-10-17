@@ -38,3 +38,5 @@ CREATE TABLE meetup_classes (
     title TEXT,
     value TEXT
 );
+
+CREATE INDEX idx_meetup_participant ON participants (event_id);
