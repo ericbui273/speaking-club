@@ -62,7 +62,9 @@ def register():
     try:
         users.create_user(username,password1)
         flash("""You have successfully created a new account. 
-                Log in now to host and join speaking meetups!""")
+                Log in now to host and join speaking meetups!""",
+                "info"
+        )
         return redirect("/")
     except sqlite3.IntegrityError:
         flash("ERROR: username is not available!", "error")
@@ -83,7 +85,7 @@ def login():
     if user_id:
         session["user_id"] = user_id
         session["csrf_token"] = secrets.token_hex(16)
-        flash("You are successfully logged in.")
+        flash("You are successfully logged in.", "info")
         return redirect(next_page)
     else:
         flash("ERROR: wrong username or password!", "error")
@@ -111,7 +113,7 @@ def add_image():
 
         user_id = session["user_id"]
         users.update_image(user_id, image)
-        flash("Updated image successfully")
+        flash("Updated image successfully", "info")
         return redirect("/user/" + str(user_id))
 
 @app.route("/image/<int:user_id>")
@@ -290,9 +292,18 @@ def remove(meetup_id):
 def search():
     query = request.args.get("query")
 
-    results = forum.search(query) if query else []
+    page = max(request.args.get("page", type=int, default=1), 1)
+    page_size = 10
 
-    return render_template("search.html", query=query,results=results)
+    results = forum.search(query, page, page_size) if query else []
+    result_count = forum.search_result_count(query) if query else None
+    
+    page_count = max(math.ceil(result_count / page_size), 1) if query else 1
+    page = min(page, page_count)
+    
+    user = users.get_user(session["user_id"]) if "user_id" in session else None
+    
+    return render_template("search.html", result_count=result_count, page_count=page_count, page=page, user=user,query=query,results=results)
 
 @app.route("/participants/meetup/<int:meetup_id>")
 def show_participants(meetup_id):
