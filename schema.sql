@@ -8,7 +8,6 @@ CREATE TABLE users (
 CREATE TABLE meetup (
     id INTEGER PRIMARY KEY,
     title TEXT,
-    languages TEXT,
     date_time TEXT,
     venue TEXT,
     avail_slot INTEGER,
