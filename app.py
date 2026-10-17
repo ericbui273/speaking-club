@@ -55,7 +55,7 @@ def register():
     
     password2 = request.form["password2"]
     if password1 != password2:
-        flash("ERROR: Passwords don't march!")
+        flash("ERROR: Passwords don't march!", "error")
         filled = {"username": username}
         return render_template("register.html", filled=filled)
 
@@ -65,7 +65,7 @@ def register():
                 Log in now to host and join speaking meetups!""")
         return redirect("/")
     except sqlite3.IntegrityError:
-        flash("ERROR: username is not available!")
+        flash("ERROR: username is not available!", "error")
         filled = {"username": username}
         return render_template("register.html", filled=filled)
 
@@ -86,7 +86,7 @@ def login():
         flash("You are successfully logged in.")
         return redirect(next_page)
     else:
-        flash("ERROR: wrong username or password!")
+        flash("ERROR: wrong username or password!", "error")
         filled = {"username": username}
         return render_template("login.html", filled=filled, next_page=next_page)
 
@@ -101,12 +101,12 @@ def add_image():
         check_csrf()
         file = request.files["image"]
         if not file.filename.endswith(".jpg"):
-            flash("ERROR: Only .jpg images are allowed!")
+            flash("ERROR: Only .jpg images are allowed!", "error")
             return render_template("add_image.html")
 
         image = file.read()
         if len(image) > 100 * 1024:
-            flash("ERROR: image is too big!")
+            flash("ERROR: image is too big!", "error")
             return render_template("add_image.html")
 
         user_id = session["user_id"]
@@ -140,7 +140,8 @@ def show_meetup(meetup_id):
     else:
         attending_meetups = []
     classes = forum.get_classes(meetup_id)
-    return render_template("meetup.html", classes = classes, meetup = meetup, attending_meetups = attending_meetups)
+    user = users.get_user(session["user_id"]) if "user_id" in session else None
+    return render_template("meetup.html", user=user, classes = classes, meetup = meetup, attending_meetups = attending_meetups)
 
 @app.route("/attending/<int:meetup_id>", methods = ["GET","POST"])
 def attending(meetup_id):
