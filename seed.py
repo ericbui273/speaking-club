@@ -6,6 +6,7 @@ db = sqlite3.connect("database.db")
 db.execute("DELETE FROM users")
 db.execute("DELETE FROM meetup")
 db.execute("DELETE FROM participants")
+db.execute("DELETE FROM meetup_classes")
 
 user_count = 100
 meetup_count = 10**5
@@ -80,7 +81,13 @@ for i in range(1, participant_count + 1):
     level = random.choice(["Beginner", "Intermediate", "Advanced"])
     db.execute("""INSERT INTO participants (user_id, event_id, participant_name, language_level, comment)
                   VALUES (?, ?, ?, ?, ?)""",
-               [user_id, meetup_id, "name" + str(i), level, "no comment"])
+               [user_id, meetup_id, "name" + str(i), level, "no comment"]
+    )
+    db.execute("""UPDATE meetup 
+            SET participant_number = participant_number+1
+            WHERE id = ?""",
+            [meetup_id]
+    )
 
 db.commit()
 db.close()

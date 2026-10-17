@@ -26,13 +26,14 @@
   </ul>
 
   <p>
-    {% if session.user_id and session.user_id != meetup.host_id and meetup.id not in attending_meetups %}
-    {% if meetup.participant_number < meetup.avail_slot %}
-    <a href="/attending/{{ meetup.id }}">Attending meetup</a>
-    {% endif %}
-    {% elif not session.user_id %}
+    {% if not session.user_id %}
     <a href="/login">Log in to attend meetup</a> <br />
     Does not have an account? <a href="/register">Create an account</a>
+    {% else %}
+    {% if session.user_id != meetup.host_id and meetup.id not in attending_meetups 
+      and meetup.participant_number < meetup.avail_slot %}
+    <a href="/attending/{{ meetup.id }}">Attending meetup</a>
+    {% endif %}
     {% endif %}
   </p>
 
