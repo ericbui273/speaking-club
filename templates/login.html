@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Login</title>
-</head>
+{% block title %}Login{% endblock %}
 
-<body>
+{% block content %}
+
   <h1>Login</h1>
-  {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
-  {% endfor %}
   <form action="/login" method="post">
     <p>
       Username: <br />
@@ -34,6 +27,4 @@
   <p>
     <a href="/">To the frontpage</a>
   </p>
-</body>
-
-</html>
+{% endblock %}

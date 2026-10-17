@@ -1,40 +1,14 @@
-<!DOCTYPE html>
-<html>
-<link rel="stylesheet" href="/static/main.css">
-<head>
-  <title>Speaking club</title>
-</head>
+{% extends "layout.html" %}
 
-<body>
-  <div class="header">
-  <h1>Speaking club</h1>
-  {% if user %}
-  <span>Welcome <a href="/user/{{ user.id }}">{{ user.username }}</a>.
-  Great to see you!</span>
-  {% else %}
-  <span>Create an account or log in to join and host speaking meetups!</span>
-  {% endif %}
-  </div>
-  <nav>
-    <ul>
-      {% if user %}
-      <li><a href="/">Front page</a></li>
-      <li><a href="/logout">Log out</a></li>
-      <li><a href="/new_post">Create new post</a></li>
-      {% else %}
-      <li><a href="/register">Create an account</a></li>
-      <li><a href="/login">Log in</a></li>
-      {% endif %}
-      <li><a href="/search">Search by keyword</a></li>
-    </ul>
-  </nav>
+{% block title %}Speaking club{% endblock %}
 
   {% for message in get_flashed_messages() %}
   <div class="info">
     {{ message }}
   </div>
   {% endfor %}
-  <div class="content">
+
+{% block content %}
   <h2>Upcoming meetups</h2>
   {% for meetup in meetups %}
   <ul>
@@ -55,7 +29,4 @@
     <a href="/{{ page + 1 }}">&gt;&gt;</a>
   </p>
   <hr />
-  </div>
-</body>
-
-</html>
+{% endblock %}

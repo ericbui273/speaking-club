@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Attending speaking meetup</title>
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block title %}Attending speaking meetup{% endblock %}
+
+{% block content %}
     <h1>Attending {{ meetup.title }}</h1>
     
     <form action="/attending/{{ meetup.id }}" method="POST">
@@ -30,6 +29,4 @@
     <input type="submit" value="Submit" />
     </form>
     <p><a href="/">Cancel registration and back to front page</a></p>
-
-</body>
-</html>
+{% endblock %}

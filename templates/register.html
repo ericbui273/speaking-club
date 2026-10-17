@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Create account</title>
-</head>
+{% block title %}Create new account{% endblock %}
 
-<body>
+{% block content %}
   <h1>Create new account</h1>
   <form action="/register" method="post">
     <p>
@@ -38,6 +35,4 @@
   <p>
     <a href="/">To the frontpage</a>
   </p>
-</body>
-
-</html>
+{% endblock %}

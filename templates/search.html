@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Search</title>
-</head>
+{% block title %}Search{% endblock %}
 
-<body>
+{% block content %}
   <h1>Search</h1>
 
   <form action="/search" method="get">
@@ -27,6 +24,7 @@
   
   <ul>
   {% if results != [] %}
+  <b>{{ result_count }} results found</b> </br>
   {% for meetup in results %}
   <p>
     <a href="/meetup/{{ meetup.id }}">{{ meetup.title }}</a>
@@ -36,10 +34,13 @@
   <hr />
   {% endfor %}
   </ul>
+  <p>
+    <a href="/search?query={{ query }}&page={{ page - 1 }}">&lt;&lt;</a>
+    Page {{ page }}/{{ page_count }}
+    <a href="/search?query={{ query }}&page={{ page + 1 }}">&gt;&gt;</a>
+  </p>
   {% else %}
   <p>No meetup found :( Do you want to try another keyword?</p>
   {% endif %}
   {% endif %}
-</body>
-
-</html>
+{% endblock %}

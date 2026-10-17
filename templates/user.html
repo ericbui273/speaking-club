@@ -1,24 +1,21 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>User {{ user.username }}</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
+{% block title %}User {{shown_user.username}}{% endblock %}
 
-<body>
-    <h1>User {{ user.username }}</h1>
-    <p><a href="/">Back to front page</a></p>
-    {% for message in get_flashed_messages() %}
-    <p><b>{{ message }}</b></p>
-    {% endfor %}
-    {% if user.has_image %}
-    <img src="/image/{{ user.id }}" alt="Profile picture of user {{ user.username }}">
+{% block content %}
+    <h1>User {{ shown_user.username }}</h1>
+
+    {% if shown_user.has_image %}
+    <img src="/image/{{ shown_user.id }}" alt="Profile picture of user {{ shown_user.username }}" class="picture">
     {% endif %}
 
-    {% if session.user_id == user.id %}
+    {% if shown_user.id == user.id %}
     <p>
-        <a href="/add_image">Lisää profiilikuva</a>
+    {% if shown_user.has_image %}
+        <a href="/add_image">Change your profile picture</a>
+    {% else %}
+        <a href="/add_image">Add profile picture</a>
+    {% endif %}
     </p>
     {% endif %}
     <p>
@@ -51,9 +48,9 @@
     {% endfor %}
     </ul>
     <p>
-        <a href="/user/{{ user.id }}?host={{ host_page - 1 }}&attending={{ attending_page }}">&lt;&lt;</a>
+        <a href="/user/{{ shown_user.id }}?host={{ host_page - 1 }}&attending={{ attending_page }}">&lt;&lt;</a>
         Page {{ host_page }}/{{ host_page_count }}
-        <a href="/user/{{ user.id }}?host={{ host_page + 1 }}&attending={{ attending_page }}">&gt;&gt;</a>
+        <a href="/user/{{ shown_user.id }}?host={{ host_page + 1 }}&attending={{ attending_page }}">&gt;&gt;</a>
     </p>
 
     <h2>Participated events</h2>
@@ -70,9 +67,8 @@
     {% endfor %}
     </ul>
     <p>
-        <a href="/user/{{ user.id }}?host={{ host_page }}&attending={{ attending_page - 1 }}">&lt;&lt;</a>
+        <a href="/user/{{ shown_user.id }}?host={{ host_page }}&attending={{ attending_page - 1 }}">&lt;&lt;</a>
         Page {{ attending_page }}/{{ attending_page_count }}
-        <a href="/user/{{ user.id }}?host={{ host_page }}&attending={{ attending_page + 1 }}">&gt;&gt;</a>
+        <a href="/user/{{ shown_user.id }}?host={{ host_page }}&attending={{ attending_page + 1 }}">&gt;&gt;</a>
     </p>
-</body>
-</html>
+{% endblock %}

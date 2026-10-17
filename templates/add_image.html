@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Add profile picture</title>
-    </head>
-    <body>
+{% extends "layout.html" %}
+
+{% block title %}Add profile picture{% endblock %}
+
+{% block content %}
         <h1>Add profile picture</h1>
         <p><a href="/">Back to front page</a></p>
         {% for message in get_flashed_messages() %}
@@ -17,5 +16,4 @@
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
             <input type="submit" value="Lähetä" />
         </form>
-    </body>
-</html>
+{% endblock %}

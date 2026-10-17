@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ meetup.title }}</title>
-</head>
+{% block title %}{{ meetup.title }}{% endblock %}
 
-<body>
+{% block content %}
   <h1>{{ meetup.title }}</h1>
-
   <hr />
+
   <p>
     Host: <a href="/user/{{ meetup.host_id }}">{{ meetup.username }}</a>
   </p>
@@ -52,6 +49,4 @@
   <p>
     <a href="/">To the front page</a>
   </p>
-</body>
-
-</html>
+{% endblock %}

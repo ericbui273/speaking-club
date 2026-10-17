@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Edit post</title>
-</head>
+{% block title %}Edit post{% endblock %}
 
-<body>
+{% block content %}
     <h1>Edit post</h1>
 
     <form action="/edit/{{ meetup.id }}" method="POST">
@@ -15,7 +12,7 @@
     </p>
     <p>
         <label for="classlang">Language</label>: <br />
-        <select name="classes" id="classlang">
+        <select name="classes" id="classlang" required>
             <option value="">(choose)</option>
         {% for option in all_classes['Language'] %}
             {% if option == classes['Language'] %}
@@ -72,7 +69,4 @@
     <input type="submit" value="Confirm edit" />
     <p><a href="/">Cancel edit and back to front page</a></p>
     </form>
-
-</body>
-
-</html>
+{% endblock %}

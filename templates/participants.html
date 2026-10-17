@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Meetup participants</title>
-</head>
+{% extends "layout.html" %}
 
-<body>
+{% block title %}Meetup participants{% endblock %}
+
+{% block content %}
     <h1>Meetup participants</h1>
     {% if meetup.host_id == session.user_id %}
     {% for person in participants %}
@@ -21,6 +19,4 @@
         <a href="/meetup/{{ meetup.id }}">Back to event page</a> | 
         <a href="/">To the front page</a>
     </p>
-    
-</body>
-</html>
+{% endblock %}

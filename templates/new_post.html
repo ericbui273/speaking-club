@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Create new post</title>
-</head>
+{% block title %}Create new post{% endblock %}
 
-<body>
-    <h1>Create new post</h1>
+{% block content %}
+    <h1>Create a new post</h1>
 
     <form action="/new_post" method="POST">
     <p>
@@ -15,7 +12,7 @@
     </p>
     <p>
         <label for="classlang">Language</label>: <br />
-        <select name="classes" id="classlang">
+        <select name="classes" id="classlang" required>
             <option value="">(choose)</option>
         {% for option in classes['Language'] %}
             <option value="Language:{{ option }}">{{ option }}</option>
@@ -60,7 +57,4 @@
     <input type="submit" value="Create post" />
     <p><a href="/">Cancel and back to front page</a></p>
     </form>
-
-</body>
-
-</html>
+ {% endblock %}
