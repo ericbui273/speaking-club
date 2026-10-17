@@ -7,7 +7,7 @@
     {% if meetup.host_id == session.user_id %}
     {% for person in participants %}
     <p>
-        Username: {{ person.username }} <br />
+        Username: <a href="/user/{{ person.id }}">{{ person.username }}</a> <br />
         Name: {{ person.participant_name}} <br />
         Language level: {{ person.language_level }} <br />
         Comment for host: {{ person.comment }} <br />
