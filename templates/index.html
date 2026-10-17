@@ -14,9 +14,14 @@
   <ul>
   <div class="meetup">
   <p>
-    <a href="/meetup/{{ meetup.id }}">{{ meetup.title }}</a>
-    <br />
-    Language: {{ meetup.languages }} , {{ meetup.avail_slot }} places available
+    <b><a href="/meetup/{{ meetup.id }}">{{ meetup.title }}</a></b>
+  </p>
+  <p>
+    {% if meetup.participant_number < meetup.avail_slot %}
+    {{ meetup.avail_slot - meetup.participant_number }}/{{ meetup.avail_slot }} places available
+    {% else %}
+    <b><i>This meetup is full</i></b>
+    {% endif %}
     <br />
     {{ meetup.date_time }}, venue: {{ meetup.venue }}
   </p>
