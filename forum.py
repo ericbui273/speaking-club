@@ -4,7 +4,8 @@ def meetup_count():
     return db.query("SELECT COUNT(*) FROM meetup")[0][0]
 
 def get_meetups(page, page_size):
-    sql = "SELECT * FROM meetup ORDER BY id LIMIT ? OFFSET ?"
+    sql = """SELECT id, title, date_time, avail_slot, venue, participant_number
+            FROM meetup ORDER BY id LIMIT ? OFFSET ?"""
 
     limit = page_size
     offset = page_size*(page-1)
@@ -78,7 +79,7 @@ def search_result_count(query):
     return db.query(sql, ["%" + query + "%"]*4)[0][0]
 
 def search(query, page, page_size):
-    sql = """SELECT m.*, u.username
+    sql = """SELECT m.id, m.title, m.date_time, m.venue, u.username
             FROM meetup AS m, users AS u
             WHERE m.host_id = u.id AND (m.title LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
             ORDER BY m.date_time
@@ -107,7 +108,7 @@ def get_attending_meetups(user_id):
     return [res[0] for res in result] if result else []
 
 def get_participants(meetup_id):
-    sql = """SELECT u.username, p.participant_name, p.language_level, p.comment
+    sql = """SELECT u.username, u.id, p.participant_name, p.language_level, p.comment
             FROM participants AS p, users AS u
             WHERE p.user_id = u.id
             AND p.event_id = ?"""
