@@ -36,10 +36,8 @@ def index(page=1):
 
     meetups = forum.get_meetups(page, page_size)
 
-    if "user_id" in session:
-        user = users.get_user(session["user_id"])
-    else:
-        user = None
+    user = users.get_user(session["user_id"]) if "user_id" in session else None
+
     return render_template("index.html", user=user, page=page, page_count=page_count, meetups = meetups)
 
 @app.route("/register", methods = ["GET", "POST"])
@@ -96,23 +94,24 @@ def login():
 @app.route("/add_image", methods=["GET", "POST"])
 def add_image():
     require_login()
+    user_id = session["user_id"]
+    user = users.get_user(user_id)
 
     if request.method == "GET":
-        return render_template("add_image.html")
+        return render_template("add_image.html", user=user)
 
     if request.method == "POST":
         check_csrf()
         file = request.files["image"]
         if not file.filename.endswith(".jpg"):
             flash("ERROR: Only .jpg images are allowed!", "error")
-            return render_template("add_image.html")
+            return render_template("add_image.html", user=user)
 
         image = file.read()
         if len(image) > 100 * 1024:
             flash("ERROR: image is too big!", "error")
             return render_template("add_image.html")
 
-        user_id = session["user_id"]
         users.update_image(user_id, image)
         flash("Updated image successfully", "info")
 
@@ -143,11 +142,13 @@ def show_meetup(meetup_id):
 
     if "user_id" in session:
         attending_meetups = forum.get_attending_meetups(session["user_id"])
+        user = users.get_user(session["user_id"])
     else:
         attending_meetups = []
+        user = None
 
     classes = forum.get_classes(meetup_id)
-    user = users.get_user(session["user_id"]) if "user_id" in session else None
+
     return render_template("meetup.html", user=user, classes = classes, meetup = meetup, attending_meetups = attending_meetups)
 
 @app.route("/attending/<int:meetup_id>", methods = ["GET","POST"])
@@ -157,12 +158,13 @@ def attending(meetup_id):
     if not meetup:
         abort(404)
 
+    user_id = session["user_id"]
+    user = users.get_user(user_id)
     if request.method == "GET":
-        return render_template("attending.html", meetup = meetup)
+        return render_template("attending.html", user=user,meetup = meetup)
     
     check_csrf()
     
-    user_id = session["user_id"]
     name = request.form["name"]
     if not name or len(name) > 50:
         abort(403)
@@ -183,10 +185,10 @@ def attending(meetup_id):
 @app.route("/new_post", methods=["POST", "GET"])
 def new_post():
     require_login()
-
+    user = users.get_user(session["user_id"])
     if request.method == "GET":
         classes = forum.get_all_classes()
-        return render_template("new_post.html", classes=classes)
+        return render_template("new_post.html", user=user, classes=classes)
 
     check_csrf()
     title = request.form["title"]
@@ -229,6 +231,7 @@ def new_post():
 @app.route("/edit/<int:meetup_id>", methods=["GET","POST"])
 def edit(meetup_id):
     require_login()
+    user = users.get_user(session["user_id"])
 
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
@@ -244,7 +247,7 @@ def edit(meetup_id):
         classes[entry["title"]] = entry["value"]
 
     if request.method == "GET":
-        return render_template("edit.html", meetup = meetup, classes=classes, all_classes = forum.get_all_classes())
+        return render_template("edit.html", user = user, meetup = meetup, classes=classes, all_classes = forum.get_all_classes())
 
     check_csrf()
     title = request.form["title"] 
@@ -280,6 +283,7 @@ def edit(meetup_id):
 def remove(meetup_id):
 
     require_login()
+    user = users.get_user(session["user_id"])
 
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
@@ -289,7 +293,7 @@ def remove(meetup_id):
         abort(403)
 
     if request.method == "GET":
-        return render_template("remove.html", meetup = meetup)
+        return render_template("remove.html", user = user, meetup = meetup)
 
     if request.method == "POST":
         check_csrf()
@@ -320,6 +324,7 @@ def search():
 @app.route("/participants/meetup/<int:meetup_id>")
 def show_participants(meetup_id):
     require_login()
+    user = users.get_user(session["user_id"])
 
     meetup = forum.get_meetup(meetup_id)
     if not meetup:
@@ -330,14 +335,14 @@ def show_participants(meetup_id):
     if session["user_id"] != meetup["host_id"]:
         abort(403)
 
-    return render_template("participants.html", meetup=meetup, participants=participants)
+    return render_template("participants.html", user=user, meetup=meetup, participants=participants)
 
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
-    user = users.get_user(user_id)
+    shown_user = users.get_user(user_id)
 
-    if not user:
+    if not shown_user:
         abort(404)
 
     host_page = max(request.args.get("host", type=int, default=1), 1)
@@ -358,9 +363,11 @@ def show_user(user_id):
     host_events = users.get_host_events(user_id, host_page, page_size)
     attending_events = users.get_attending_events(user_id, attending_page, page_size)
 
+    user = users.get_user(session["user_id"]) if "user_id" in session else None
     return render_template(
         "user.html", 
-        user = user, 
+        user = user,
+        shown_user = shown_user, 
         host_events = host_events, 
         attending_events=attending_events,
         host_count = host_count,
