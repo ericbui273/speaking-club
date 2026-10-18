@@ -2,12 +2,6 @@
 
 {% block title %}Speaking club{% endblock %}
 
-  {% for message in get_flashed_messages() %}
-  <div class="info">
-    {{ message }}
-  </div>
-  {% endfor %}
-
 {% block content %}
   <h2>Upcoming meetups</h2>
   {% if meetup_count == 0 %}
