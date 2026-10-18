@@ -7,8 +7,8 @@
     
     <form action="/attending/{{ meetup.id }}" method="POST">
     <p>
-        Your name: <br />
-        <input type = "text" name="name" maxlength="100" required />
+        <label for="name">Your name</label>: <br />
+        <input type = "text" id="name" name="name" maxlength="100" required />
     </p>
     <p>
         How do you define you {{ meetup.language }} level? <br />
@@ -22,8 +22,8 @@
         <label for="native">Native</label><br />
     </p>
     <p>
-        Write here any comment/question/need for special accommodation <br />
-        <textarea name="comment" rows="5" cols="40" maxlength="5000"></textarea>
+        <label for="comment">Write here any comment/question/need for special accommodation</label> <br />
+        <textarea id="comment" name="comment" rows="5" cols="40" maxlength="5000"></textarea>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Submit" />

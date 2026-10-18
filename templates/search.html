@@ -7,11 +7,11 @@
 
   <form action="/search" method="get">
     <p>
-      Search keyword:
+      <label for="query">Search keyword</label>:
       {% if query %}
-      <input type="text" name="query" required value="{{ query }}" />
+      <input type="text" id="query" name="query" required value="{{ query }}" />
       {% else %}
-      <input type="text" name="query" required />
+      <input type="text" id="query" name="query" required />
       {% endif %}
     </p>
         

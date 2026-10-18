@@ -7,10 +7,10 @@
 
   <form action="/remove/{{ meetup.id }}" method="POST">
     <p>
-      Are you sure you want to remove this post?
+      <label for="submit">Are you sure you want to remove this post?</label>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" name="continue" value="Yes" />
-    <input type="submit" name="cancel" value="No" />
+    <input type="submit" id="submit" name="continue" value="Yes" />
+    <input type="submit" id="submit" name="cancel" value="No" />
   </form>
 {% endblock %}

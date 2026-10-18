@@ -7,8 +7,8 @@
 
     <form action="/edit/{{ meetup.id }}" method="POST">
     <p>
-        Title: <br />
-        <input type="text" name="title" value="{{ meetup.title }}" maxlength="100" required />
+        <label for="title">Title</label>: <br />
+        <input type="text" id="title" name="title" value="{{ meetup.title }}" maxlength="100" required />
     </p>
     <p>
         <label for="classlang">Language</label>: <br />
@@ -37,12 +37,12 @@
         </select>
     </p>
     <p>
-        Date and time: <br />
-        <input type="datetime-local" name="date_time" value = "{{ meetup.date_time }}" required /> 
+        <label for="date_time">Date and time</label>: <br />
+        <input type="datetime-local" id="date_time" name="date_time" value = "{{ meetup.date_time }}" required /> 
     </p>
     <p>
-        Venue: <br />
-        <input type="text" name="venue" value = "{{ meetup.venue }}" maxlength="100" required/>
+        <label for="venue">Venue</label>: <br />
+        <input type="text" id="venue" name="venue" value = "{{ meetup.venue }}" maxlength="100" required/>
     </p>
     <p>
         <label for="classcity">City</label>: <br />
@@ -58,12 +58,12 @@
         </select>
     </p>
     <p>
-        Target participant amount: <br />
-        <input type="number" name="avail_slot" min="{{ [5, meetup.participant_number] | max }}" max="50" value = "{{ meetup.avail_slot }}" />
+        <label for="avail_slot">Target participant amount</label>: <br />
+        <input type="number" id="avail_slot" name="avail_slot" min="{{ [5, meetup.participant_number] | max }}" max="50" value = "{{ meetup.avail_slot }}" />
     </p>
     <p>
-        Post content: <br />
-        <textarea name="content" rows="5" cols="40" maxlength = "5000">{{ meetup.content }}</textarea>
+        <label for="content">Post content</label>: <br />
+        <textarea id="content" name="content" rows="5" cols="40" maxlength = "5000">{{ meetup.content }}</textarea>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Confirm edit" />
