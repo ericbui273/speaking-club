@@ -10,6 +10,9 @@
 
 {% block content %}
   <h2>Upcoming meetups</h2>
+  {% if meetup_count == 0 %}
+  <p>There are no upcoming meetups. Host your own meetup now!</p>
+  {% else %}
   {% for meetup in meetups %}
   <ul>
   <div class="meetup">
@@ -34,4 +37,5 @@
     <a href="/{{ page + 1 }}">&gt;&gt;</a>
   </p>
   <hr />
+  {% endif %}
 {% endblock %}
