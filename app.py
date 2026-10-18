@@ -57,13 +57,16 @@ def index(page=1):
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():
+    if "user_id" in session:
+        return redirect("/")
+
     if request.method == "GET":
         return render_template("register.html", filled={})
 
     username = request.form["username"]
     password1 = request.form["password1"]
 
-    if not username or not password1 or len(username) not in range(5,51) or len(password1) < 8:
+    if not username or not password1 or len(username) not in range(2,51) or len(password1) < 8:
         return("Username and password must meet the length requirement!", 403)
 
     password2 = request.form["password2"]

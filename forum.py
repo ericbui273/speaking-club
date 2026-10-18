@@ -94,11 +94,11 @@ def edit_meetup( # pylint: disable=too-many-arguments
     db.execute(sql,[title, date_time, venue, avail_slot, content, meetup_id])
 
     sql = "DELETE FROM meetup_classes WHERE meetup_id = ?"
-    db.execute(sql, [id])
+    db.execute(sql, [meetup_id])
 
     sql = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
     for class_title in classes:
-        db.execute(sql, [id, class_title, classes[class_title]])
+        db.execute(sql, [meetup_id, class_title, classes[class_title]])
 
 def remove_meetup(meetup_id):
     sql = "DELETE FROM participants WHERE event_id = ?"
