@@ -7,7 +7,9 @@ def get_connection():
     con.row_factory = sqlite3.Row
     return con
 
-def execute(sql, params=[]):
+def execute(sql, params=None):
+    if not params:
+        params = []
     con = get_connection()
     try:
         result = con.execute(sql, params)
@@ -17,9 +19,11 @@ def execute(sql, params=[]):
         con.close()
 
 def last_insert_id():
-    return g.last_insert_id    
-    
-def query(sql, params=[]):
+    return g.last_insert_id
+
+def query(sql, params=None):
+    if not params:
+        params = []
     con = get_connection()
     result = con.execute(sql, params).fetchall()
     con.close()

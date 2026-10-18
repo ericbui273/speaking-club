@@ -5,17 +5,19 @@ def meetup_count():
 
 def get_meetups(page, page_size):
     sql = """SELECT id, title, date_time, avail_slot, venue, participant_number
-            FROM meetup ORDER BY id LIMIT ? OFFSET ?"""
+             FROM meetup ORDER BY id LIMIT ? OFFSET ?"""
 
     limit = page_size
     offset = page_size*(page-1)
+
     return db.query(sql, [limit, offset])
 
 def get_meetup(meetup_id):
     sql = """SELECT m.*, u.username
-            FROM meetup AS m, users AS u
-            WHERE m.host_id = u.id AND m.id = ?"""
+             FROM meetup AS m, users AS u
+             WHERE m.host_id = u.id AND m.id = ?"""
     result = db.query(sql,[meetup_id])
+
     return result[0] if result else None
 
 def get_all_classes():
@@ -25,7 +27,7 @@ def get_all_classes():
     classes = {}
 
     for title, value in result:
-        if title not in classes.keys():
+        if title not in classes:
             classes[title] = []
         classes[title].append(value)
 
@@ -35,10 +37,39 @@ def get_classes(meetup_id):
     sql = "SELECT title, value FROM meetup_classes WHERE meetup_id = ?"
     return db.query(sql, [meetup_id])
 
-def add_meetup(title, date_time, venue, avail_slot, content, host_id, classes):
-    sql = """INSERT INTO meetup (title, date_time, venue, avail_slot, content, host_id, participant_number) 
-            VALUES(?,?,?,?,?,?,?)"""
-    db.execute(sql,[title, date_time, venue, avail_slot, content, host_id, 0])
+def add_meetup( # pylint: disable=too-many-arguments
+        title,
+        date_time,
+        venue,
+        avail_slot,
+        content,
+        host_id,
+        classes
+):
+    sql = """
+        INSERT INTO meetup (
+            title,
+            date_time,
+            venue,
+            avail_slot,
+            content,
+            host_id,
+            participant_number
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """
+    db.execute(
+        sql,
+        [
+            title,
+            date_time,
+            venue,
+            avail_slot,
+            content,
+            host_id,
+            0
+        ]
+    )
     meetup_id = db.last_insert_id()
 
     sql2 = "INSERT INTO meetup_classes (meetup_id, title, value) VALUES (?, ?, ?)"
@@ -48,11 +79,19 @@ def add_meetup(title, date_time, venue, avail_slot, content, host_id, classes):
 
     return meetup_id
 
-def edit_meetup(title, date_time, venue, avail_slot, content, id, classes):
+def edit_meetup( # pylint: disable=too-many-arguments
+        title,
+        date_time,
+        venue,
+        avail_slot,
+        content,
+        meetup_id,
+        classes
+):
     sql = """UPDATE meetup
             SET title = ?, date_time = ?, venue = ?, avail_slot = ?, content = ?
             WHERE id = ?"""
-    db.execute(sql,[title, date_time, venue, avail_slot, content, id])
+    db.execute(sql,[title, date_time, venue, avail_slot, content, meetup_id])
 
     sql = "DELETE FROM meetup_classes WHERE meetup_id = ?"
     db.execute(sql, [id])
@@ -72,31 +111,54 @@ def remove_meetup(meetup_id):
     db.execute(sql, [meetup_id])
 
 def search_result_count(query):
-    sql = """SELECT COUNT(*)
-            FROM meetup AS m, users AS u
-            WHERE m.host_id = u.id AND (m.title LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
-        """
+    sql = """
+        SELECT COUNT(*)
+        FROM meetup AS m
+        JOIN users AS u ON m.host_id = u.id
+        WHERE m.title LIKE ?
+        OR m.venue LIKE ?
+        OR m.content LIKE ?
+        OR u.username LIKE ?
+    """
+
     return db.query(sql, ["%" + query + "%"]*4)[0][0]
 
 def search(query, page, page_size):
-    sql = """SELECT m.id, m.title, m.date_time, m.venue, u.username
-            FROM meetup AS m, users AS u
-            WHERE m.host_id = u.id AND (m.title LIKE ? OR venue LIKE ? OR content LIKE ? OR u.username LIKE ?)
-            ORDER BY m.date_time
-            LIMIT ? OFFSET ?"""
+    sql = """
+        SELECT m.id, m.title, m.date_time, m.venue, u.username
+        FROM meetup AS m
+        JOIN users AS u ON m.host_id = u.id
+        WHERE m.title LIKE ?
+        OR m.venue LIKE ?
+        OR m.content LIKE ?
+        OR u.username LIKE ?
+        ORDER BY m.date_time
+        LIMIT ? OFFSET ?
+    """
+
     limit = page_size
     offset = page_size*(page-1)
+
     return db.query(sql,["%" + query + "%"]*4 + [limit, offset])
 
 def add_participant(user_id, event_id, name, level, comment):
-    sql = """INSERT INTO participants (user_id, event_id, participant_name, language_level, comment)
-                VALUES (?,?,?,?,?)"""
+    sql = """
+        INSERT INTO participants (
+            user_id,
+            event_id,
+            participant_name,
+            language_level,
+            comment
+        )
+        VALUES (?, ?, ?, ?, ?)
+    """
     db.execute(sql,[user_id,event_id,name,level,comment])
+
     participant_id = db.last_insert_id()
     return participant_id
 
 def update_participant_number(meetup_id):
-    sql = """UPDATE meetup 
+    sql = """UPDATE meetup
             SET participant_number = participant_number+1
             WHERE id = ?"""
     db.execute(sql, [meetup_id])
@@ -108,8 +170,15 @@ def get_attending_meetups(user_id):
     return [res[0] for res in result] if result else []
 
 def get_participants(meetup_id):
-    sql = """SELECT u.username, u.id, p.participant_name, p.language_level, p.comment
-            FROM participants AS p, users AS u
-            WHERE p.user_id = u.id
-            AND p.event_id = ?"""
+    sql = """
+        SELECT
+            u.username,
+            u.id,
+            p.participant_name,
+            p.language_level,
+            p.comment
+        FROM participants AS p
+        JOIN users AS u ON p.user_id = u.id
+        WHERE p.event_id = ?
+    """
     return db.query(sql,[meetup_id])
