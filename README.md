@@ -24,7 +24,7 @@ Create and initialize a new database (on Linux):
 $ sqlite3 database.db < schema.sql
 $ sqlite3 database.db < init.sql
 ```
-Create a new database on Windows Powershell:
+Create and initialize a new database on Windows Powershell:
 ```
 sqlite3 database.db
 sqlite> .read schema.sql
@@ -32,5 +32,27 @@ sqlite> .read init.sql
 ```
 Launch the application:
 ```
-flask run
+$ flask run
 ```
+
+## Test with large amount of data
+Run the following command to inject the seed data and test the processing of large data amount by yourself:
+```
+$ python3 seed.py
+```
+
+### Test setup
+A seed file was created to inject a large amount of data into the database to test how the application process when the amount of data is large.
+
+The test was done with 1000 user accounts, 10^5 meetups created by random users, and 10^6 meetup participants randomly distributed to all meetups.
+
+### Overall result
+In overall, the application works well with the seed data. Pagination was added to the front page, user page, and search page to ensure a logical and easy-to-use interface.
+
+### Runtime result
+The application does not have a site where all the primary data (meetups) and secondary data (participant list) are queried and shown together. Instead, the participant list is only visible to the meetup host, and was queried only with its own meetup. As a result, it does not take long at all to load the front page even with a large amount of meetups.
+
+Loading the front page only took _**0.0 to 0.07 seconds**_.
+
+This runtime is achieved even without the database index. Therefore, there was no need to add the database index.
+
